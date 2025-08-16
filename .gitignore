@@ -8,6 +8,10 @@ web/app/uploads/*
 !web/app/uploads/.gitkeep
 web/app/cache/*
 
+# Sage theme build and node modules
+web/app/themes/Amal_Sage/node_modules/
+web/app/themes/Amal_Sage/public/build/
+
 # WordPress
 web/wp
 web/.htaccess
