@@ -15,6 +15,16 @@ Key aspects of the app:
 
 The agent should follow best practices in WordPress development, PHP, JavaScript, and front-end workflows, while ensuring compatibility with Sage theme structures and Bedrock configuration.
 
+## 🔐 Authentication System
+
+**NEW**: Amal now includes a secure user authentication system! 
+
+- **Location**: `/web/app/plugins/amal-auth/`
+- **Features**: Secure registration and login for Pet Owners and Service Providers
+- **Security**: Password hashing, SQL injection protection, email validation
+- **Usage**: WordPress shortcodes `[amal_register_form]` and `[amal_login_form]`
+- **Documentation**: See `/web/app/plugins/amal-auth/README.md` for complete details
+
 ---
 
 ## Project Stack
