@@ -1,28 +1,24 @@
-# Application
-web/app/plugins/*
-!web/app/plugins/.gitkeep
-web/app/mu-plugins/*/
-web/app/themes/twentytwentyfive/
-web/app/upgrade
-web/app/uploads/*
-!web/app/uploads/.gitkeep
-web/app/cache/*
+# Composer dependencies
+/vendor/
 
-# WordPress
-web/wp
-web/.htaccess
+# Environment files
+/.env
+
+# WordPress uploads (don’t version user media)
+web/app/uploads/
+
+# Sage theme node_modules / build files
+web/app/themes/Amal_Sage/node_modules/
+web/app/themes/Amal_Sage/dist/
+web/app/themes/Amal_Sage/public/
+web/app/themes/Amal_Sage/.cache/
 
 # Logs
+npm-debug.log
 *.log
 
-# Dotenv
-.env
-.env.*
-!.env.example
-
-# Composer
-/vendor
-auth.json
-
-# WP-CLI
-wp-cli.local.yml
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
