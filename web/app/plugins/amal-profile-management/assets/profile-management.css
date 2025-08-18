@@ -1,0 +1,248 @@
+/**
+ * Amal Profile Management Plugin - Styles
+ * Version: 1.0.0
+ */
+
+body.amal-profile-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+.amal-profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.amal-profile-header {
+    background: linear-gradient(135deg, #007cba, #005a87);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.amal-profile-title {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.amal-profile-subtitle {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.amal-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.amal-feature-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #007cba;
+}
+
+.amal-feature-title {
+    color: #007cba;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+}
+
+.amal-feature-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.amal-feature-list li {
+    margin: 5px 0;
+    color: #555;
+}
+
+.amal-interface-preview {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin: 20px;
+    overflow: hidden;
+}
+
+.amal-tab-nav {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.amal-tab-btn {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.amal-tab-btn.active {
+    background: white;
+    border-bottom-color: #007cba;
+    color: #007cba;
+}
+
+.amal-tab-content {
+    padding: 30px;
+    min-height: 300px;
+    display: none;
+}
+
+.amal-tab-content.active {
+    display: block;
+}
+
+.amal-form-demo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.amal-form-group {
+    margin-bottom: 15px;
+}
+
+.amal-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.amal-form-group input, 
+.amal-form-group select, 
+.amal-form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.amal-pet-card, 
+.amal-service-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.amal-card-title {
+    font-weight: 600;
+    color: #007cba;
+    margin: 0 0 10px 0;
+}
+
+.amal-card-info {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.amal-btn {
+    background: #007cba;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.amal-btn:hover {
+    background: #005a87;
+}
+
+.amal-btn-danger {
+    background: #dc3545;
+}
+
+.amal-implementation-info {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+}
+
+.amal-implementation-title {
+    color: #1976d2;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+}
+
+.amal-code-block {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .amal-tab-nav {
+        flex-direction: column;
+    }
+    
+    .amal-tab-btn {
+        padding: 12px 15px;
+    }
+    
+    .amal-feature-grid {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    .amal-form-demo {
+        grid-template-columns: 1fr;
+    }
+    
+    .amal-profile-container {
+        margin: 10px;
+        border-radius: 4px;
+    }
+    
+    .amal-tab-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .amal-profile-header {
+        padding: 20px;
+    }
+    
+    .amal-profile-title {
+        font-size: 24px;
+    }
+    
+    .amal-profile-subtitle {
+        font-size: 14px;
+    }
+}
