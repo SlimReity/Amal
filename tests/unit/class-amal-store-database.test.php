@@ -3,6 +3,9 @@
  * Unit tests for Amal Store Database Schema
  */
 
+// Include the class being tested
+require_once dirname(__DIR__, 2) . '/web/app/plugins/amal-store/includes/class-amal-store-database.php';
+
 class Amal_Store_Database_Test extends WP_UnitTestCase {
     
     private $database;

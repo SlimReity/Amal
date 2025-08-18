@@ -15,6 +15,29 @@ Key aspects of the app:
 
 The agent should follow best practices in WordPress development, PHP, JavaScript, and front-end workflows, while ensuring compatibility with Sage theme structures and Bedrock configuration.
 
+## 🧪 Testing
+
+The project includes a comprehensive test suite organized by test type:
+
+- **Unit Tests**: Test individual classes and functions in isolation
+- **Integration Tests**: Test multiple components working together  
+- **End-to-End Tests**: Test complete user workflows
+
+**Quick Start:**
+```bash
+# Run all tests
+composer test
+
+# Run specific test types
+composer test:unit
+composer test:integration
+composer test:e2e
+```
+
+**For detailed testing instructions, see [TESTING.md](TESTING.md)**
+
+---
+
 ## 🔐 Authentication System
 
 **NEW**: Amal now includes a secure user authentication system! 

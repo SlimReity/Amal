@@ -10,29 +10,31 @@ $errors = [];
 $passed = 0;
 
 // Test 1: Check required files exist
+$plugin_root = dirname(__DIR__, 2) . '/web/app/plugins/amal-store';
 $required_files = [
-    'includes/class-amal-store-admin.php',
-    'admin/pages/inventory-list.php',
-    'admin/pages/item-form.php',
-    'admin/assets/admin.css',
-    'admin/assets/admin.js',
-    'admin/test-inventory-admin.html'
+    $plugin_root . '/includes/class-amal-store-admin.php',
+    $plugin_root . '/admin/pages/inventory-list.php',
+    $plugin_root . '/admin/pages/item-form.php',
+    $plugin_root . '/admin/assets/admin.css',
+    $plugin_root . '/admin/assets/admin.js',
+    $plugin_root . '/admin/test-inventory-admin.html'
 ];
 
 foreach ($required_files as $file) {
+    $relative_file = str_replace($plugin_root . '/', '', $file);
     if (file_exists($file)) {
-        echo "✅ File exists: $file\n";
+        echo "✅ File exists: $relative_file\n";
         $passed++;
     } else {
-        echo "❌ Missing file: $file\n";
-        $errors[] = "Missing file: $file";
+        echo "❌ Missing file: $relative_file\n";
+        $errors[] = "Missing file: $relative_file";
     }
 }
 
 // Test 2: Check PHP syntax
 $php_files = [
-    'includes/class-amal-store-admin.php',
-    '../amal-auth/includes/helper-functions.php'
+    $plugin_root . '/includes/class-amal-store-admin.php',
+    dirname(__DIR__, 2) . '/web/app/plugins/amal-auth/includes/helper-functions.php'
 ];
 
 foreach ($php_files as $file) {
@@ -49,8 +51,8 @@ foreach ($php_files as $file) {
 }
 
 // Test 3: Check CSS structure
-if (file_exists('admin/assets/admin.css')) {
-    $css_content = file_get_contents('admin/assets/admin.css');
+if (file_exists($plugin_root . '/admin/assets/admin.css')) {
+    $css_content = file_get_contents($plugin_root . '/admin/assets/admin.css');
     $required_classes = [
         '.amal-admin-body',
         '.amal-admin-header',
@@ -71,8 +73,8 @@ if (file_exists('admin/assets/admin.css')) {
 }
 
 // Test 4: Check JavaScript structure
-if (file_exists('admin/assets/admin.js')) {
-    $js_content = file_get_contents('admin/assets/admin.js');
+if (file_exists($plugin_root . '/admin/assets/admin.js')) {
+    $js_content = file_get_contents($plugin_root . '/admin/assets/admin.js');
     $required_functions = [
         'AmalStoreAdmin',
         'validateRequired',
@@ -92,8 +94,8 @@ if (file_exists('admin/assets/admin.js')) {
 
 // Test 5: Check HTML template structure
 $html_files = [
-    'admin/pages/inventory-list.php',
-    'admin/pages/item-form.php'
+    $plugin_root . '/admin/pages/inventory-list.php',
+    $plugin_root . '/admin/pages/item-form.php'
 ];
 
 foreach ($html_files as $file) {

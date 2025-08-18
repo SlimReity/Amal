@@ -5,7 +5,7 @@
  */
 
 // Include the frontend class
-require_once dirname(__FILE__) . '/../includes/class-amal-store-frontend.php';
+require_once dirname(__DIR__, 2) . '/web/app/plugins/amal-store/includes/class-amal-store-frontend.php';
 
 class Amal_Store_Frontend_Test {
     
@@ -64,7 +64,7 @@ class Amal_Store_Frontend_Test {
     private function test_template_files() {
         echo "📄 Testing Template Files...\n";
         
-        $template_dir = dirname(__FILE__) . '/../templates/';
+        $template_dir = dirname(__DIR__, 2) . '/web/app/plugins/amal-store/templates/';
         
         $required_templates = [
             'storefront.php' => 'Storefront template',
@@ -94,7 +94,7 @@ class Amal_Store_Frontend_Test {
     private function test_asset_files() {
         echo "💻 Testing Asset Files...\n";
         
-        $assets_dir = dirname(__FILE__) . '/../assets/';
+        $assets_dir = dirname(__DIR__, 2) . '/web/app/plugins/amal-store/assets/';
         
         // Test CSS file
         $css_file = $assets_dir . 'css/frontend.css';

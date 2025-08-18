@@ -5,11 +5,11 @@
  */
 
 // Include WordPress
-require_once dirname(__FILE__) . '/../../../../wp-config.php';
+require_once dirname(__DIR__, 2) . '/web/wp-config.php';
 
 // Include plugin classes
-require_once dirname(__FILE__) . '/../includes/class-amal-store-database.php';
-require_once dirname(__FILE__) . '/../tests/test-database.php';
+require_once dirname(__DIR__, 2) . '/web/app/plugins/amal-store/includes/class-amal-store-database.php';
+require_once dirname(__DIR__, 2) . '/web/app/plugins/amal-store/tests/test-database.php';
 
 class Amal_Store_Test_Runner {
     
@@ -45,17 +45,18 @@ class Amal_Store_Test_Runner {
         echo "📁 Testing Plugin Structure...\n";
         
         // Test main plugin file exists
-        $this->assert_file_exists('../amal-store.php', 'Main plugin file');
+        $plugin_root = dirname(__DIR__, 2) . '/web/app/plugins/amal-store';
+        $this->assert_file_exists($plugin_root . '/amal-store.php', 'Main plugin file');
         
         // Test includes directory
-        $this->assert_file_exists('../includes/class-amal-store.php', 'Main plugin class');
-        $this->assert_file_exists('../includes/class-amal-store-database.php', 'Database class');
+        $this->assert_file_exists($plugin_root . '/includes/class-amal-store.php', 'Main plugin class');
+        $this->assert_file_exists($plugin_root . '/includes/class-amal-store-database.php', 'Database class');
         
         // Test documentation
-        $this->assert_file_exists('../README.md', 'README documentation');
+        $this->assert_file_exists($plugin_root . '/README.md', 'README documentation');
         
         // Test admin files
-        $this->assert_file_exists('../admin/test-schema.html', 'HTML test page');
+        $this->assert_file_exists($plugin_root . '/admin/test-schema.html', 'HTML test page');
         
         echo "\n";
     }

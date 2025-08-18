@@ -21,7 +21,7 @@ if (!function_exists('admin_url')) {
 }
 
 // Simple test to check class instantiation
-require_once dirname(__FILE__) . '/includes/class-amal-store-database.php';
+require_once dirname(__DIR__, 2) . '/web/app/plugins/amal-store/includes/class-amal-store-database.php';
 echo "🧪 Testing Admin Inventory Management Classes\n";
 echo str_repeat("=", 50) . "\n";
 
