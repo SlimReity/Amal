@@ -101,6 +101,16 @@ class AmalAuthHelper
     }
     
     /**
+     * Check if current user is an admin
+     * 
+     * @return bool
+     */
+    public static function is_admin()
+    {
+        return self::is_logged_in() && $_SESSION['amal_user_type'] === 'admin';
+    }
+    
+    /**
      * Require user to be logged in
      * Redirects to login page if not logged in
      * 
@@ -121,7 +131,7 @@ class AmalAuthHelper
     /**
      * Require user to be a specific type
      * 
-     * @param string $user_type Required user type ('pet_owner' or 'service_provider')
+     * @param string $user_type Required user type ('pet_owner', 'service_provider', or 'admin')
      * @param string $redirect_url URL to redirect to if not authorized
      */
     public static function require_user_type($user_type, $redirect_url = '')
@@ -136,6 +146,17 @@ class AmalAuthHelper
             wp_redirect($redirect_url);
             exit;
         }
+    }
+    
+    /**
+     * Require user to be admin
+     * Redirects to unauthorized page if not admin
+     * 
+     * @param string $redirect_url URL to redirect to if not authorized
+     */
+    public static function require_admin($redirect_url = '')
+    {
+        self::require_user_type('admin', $redirect_url);
     }
     
     /**
@@ -721,6 +742,16 @@ function amal_is_service_provider()
 }
 
 /**
+ * Check if current user is admin
+ * 
+ * @return bool
+ */
+function amal_is_admin()
+{
+    return AmalAuthHelper::is_admin();
+}
+
+/**
  * Require login
  * 
  * @param string $redirect_url
@@ -728,6 +759,16 @@ function amal_is_service_provider()
 function amal_require_login($redirect_url = '')
 {
     AmalAuthHelper::require_login($redirect_url);
+}
+
+/**
+ * Require admin access
+ * 
+ * @param string $redirect_url
+ */
+function amal_require_admin($redirect_url = '')
+{
+    AmalAuthHelper::require_admin($redirect_url);
 }
 
 /**
