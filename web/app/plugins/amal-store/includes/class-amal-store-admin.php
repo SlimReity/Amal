@@ -28,6 +28,7 @@ class Amal_Store_Admin {
         add_action('wp_ajax_amal_store_save_item', array($this, 'ajax_save_item'));
         add_action('wp_ajax_amal_store_delete_item', array($this, 'ajax_delete_item'));
         add_action('wp_ajax_amal_store_toggle_item_status', array($this, 'ajax_toggle_item_status'));
+        add_action('wp_ajax_amal_store_update_order_status', array($this, 'ajax_update_order_status'));
         
         // Enqueue admin assets
         add_action('wp_enqueue_scripts', array($this, 'enqueue_admin_assets'));
@@ -49,8 +50,8 @@ class Amal_Store_Admin {
         $parsed_url = parse_url($request_uri);
         $path = $parsed_url['path'];
         
-        // Check for admin inventory management routes
-        if (strpos($path, '/admin/inventory') !== false) {
+        // Check for admin management routes
+        if (strpos($path, '/admin/inventory') !== false || strpos($path, '/admin/orders') !== false) {
             $this->route_admin_request();
         }
     }
@@ -87,6 +88,10 @@ class Amal_Store_Admin {
             $this->show_edit_item_page();
         } elseif (strpos($path, '/admin/inventory') !== false) {
             $this->show_inventory_list_page();
+        } elseif (strpos($path, '/admin/orders/view') !== false) {
+            $this->show_order_detail_page();
+        } elseif (strpos($path, '/admin/orders') !== false) {
+            $this->show_orders_list_page();
         }
     }
     
@@ -349,9 +354,9 @@ class Amal_Store_Admin {
     }
     
     public function enqueue_admin_assets() {
-        // Only enqueue on admin inventory pages
+        // Only enqueue on admin inventory or orders pages
         $request_uri = $_SERVER['REQUEST_URI'];
-        if (strpos($request_uri, '/admin/inventory') !== false) {
+        if (strpos($request_uri, '/admin/inventory') !== false || strpos($request_uri, '/admin/orders') !== false) {
             wp_enqueue_script('jquery');
             wp_enqueue_script(
                 'amal-store-admin',
@@ -376,9 +381,195 @@ class Amal_Store_Admin {
                     'deleteConfirm' => 'Are you sure you want to delete this item?',
                     'saveSuccess' => 'Item saved successfully',
                     'deleteSuccess' => 'Item deleted successfully',
+                    'statusUpdateSuccess' => 'Order status updated successfully',
                     'error' => 'An error occurred. Please try again.'
                 )
             ));
+        }
+    }
+    
+    // Order Management Methods
+    
+    public function show_orders_list_page() {
+        $status_filter = $_GET['status'] ?? '';
+        $date_filter = $_GET['date'] ?? '';
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $orders_per_page = 20;
+        $offset = ($page - 1) * $orders_per_page;
+        
+        $orders = $this->get_all_orders($orders_per_page, $offset, $status_filter, $date_filter);
+        $total_orders = $this->get_orders_count($status_filter, $date_filter);
+        
+        include AMAL_STORE_PLUGIN_DIR . 'admin/pages/orders-list.php';
+        exit;
+    }
+    
+    public function show_order_detail_page() {
+        $order_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $order = $this->get_order_with_details($order_id);
+        
+        if (!$order) {
+            wp_redirect(home_url('/admin/orders/?error=order_not_found'));
+            exit;
+        }
+        
+        include AMAL_STORE_PLUGIN_DIR . 'admin/pages/order-detail.php';
+        exit;
+    }
+    
+    public function get_all_orders($limit = 20, $offset = 0, $status_filter = '', $date_filter = '') {
+        $orders_table = $this->wpdb->prefix . 'amal_orders';
+        $users_table = $this->wpdb->prefix . 'amal_users';
+        
+        $where_conditions = array();
+        $params = array();
+        
+        if (!empty($status_filter)) {
+            $where_conditions[] = "o.status = %s";
+            $params[] = $status_filter;
+        }
+        
+        if (!empty($date_filter)) {
+            $where_conditions[] = "DATE(o.created_at) = %s";
+            $params[] = $date_filter;
+        }
+        
+        $where_clause = '';
+        if (!empty($where_conditions)) {
+            $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
+        }
+        
+        $query = "
+            SELECT o.*, u.username, u.email, u.first_name, u.last_name
+            FROM $orders_table o
+            LEFT JOIN $users_table u ON o.user_id = u.id
+            $where_clause
+            ORDER BY o.created_at DESC
+            LIMIT %d OFFSET %d
+        ";
+        
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        if (!empty($params)) {
+            $query = $this->wpdb->prepare($query, $params);
+        }
+        
+        return $this->wpdb->get_results($query);
+    }
+    
+    public function get_orders_count($status_filter = '', $date_filter = '') {
+        $orders_table = $this->wpdb->prefix . 'amal_orders';
+        
+        $where_conditions = array();
+        $params = array();
+        
+        if (!empty($status_filter)) {
+            $where_conditions[] = "status = %s";
+            $params[] = $status_filter;
+        }
+        
+        if (!empty($date_filter)) {
+            $where_conditions[] = "DATE(created_at) = %s";
+            $params[] = $date_filter;
+        }
+        
+        $where_clause = '';
+        if (!empty($where_conditions)) {
+            $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
+        }
+        
+        $query = "SELECT COUNT(*) FROM $orders_table $where_clause";
+        
+        if (!empty($params)) {
+            $query = $this->wpdb->prepare($query, $params);
+        }
+        
+        return intval($this->wpdb->get_var($query));
+    }
+    
+    public function get_order_with_details($order_id) {
+        $orders_table = $this->wpdb->prefix . 'amal_orders';
+        $users_table = $this->wpdb->prefix . 'amal_users';
+        $order_items_table = $this->wpdb->prefix . 'amal_order_items';
+        $items_table = $this->wpdb->prefix . 'amal_items';
+        
+        // Get order with user info
+        $order_query = $this->wpdb->prepare("
+            SELECT o.*, u.username, u.email, u.first_name, u.last_name
+            FROM $orders_table o
+            LEFT JOIN $users_table u ON o.user_id = u.id
+            WHERE o.id = %d
+        ", $order_id);
+        
+        $order = $this->wpdb->get_row($order_query);
+        
+        if (!$order) {
+            return null;
+        }
+        
+        // Get order items
+        $items_query = $this->wpdb->prepare("
+            SELECT oi.*, i.title, i.category, i.image_url
+            FROM $order_items_table oi
+            LEFT JOIN $items_table i ON oi.item_id = i.id
+            WHERE oi.order_id = %d
+        ", $order_id);
+        
+        $order->items = $this->wpdb->get_results($items_query);
+        
+        return $order;
+    }
+    
+    public function ajax_update_order_status() {
+        // Start session if needed
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_store_admin_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        // Include auth functions and require admin access
+        if (file_exists(AMAL_STORE_PLUGIN_DIR . '../amal-auth/includes/helper-functions.php')) {
+            require_once AMAL_STORE_PLUGIN_DIR . '../amal-auth/includes/helper-functions.php';
+        }
+        
+        if (!function_exists('amal_is_admin') || !amal_is_admin()) {
+            wp_send_json_error(array('message' => 'Access denied. Admin privileges required.'));
+        }
+        
+        $order_id = intval($_POST['order_id']);
+        $new_status = sanitize_text_field($_POST['status']);
+        
+        if ($order_id <= 0) {
+            wp_send_json_error(array('message' => 'Invalid order ID'));
+        }
+        
+        $valid_statuses = array('pending', 'processing', 'shipped', 'delivered', 'cancelled');
+        if (!in_array($new_status, $valid_statuses)) {
+            wp_send_json_error(array('message' => 'Invalid status'));
+        }
+        
+        $orders_table = $this->wpdb->prefix . 'amal_orders';
+        
+        $result = $this->wpdb->update(
+            $orders_table,
+            array('status' => $new_status, 'updated_at' => current_time('mysql')),
+            array('id' => $order_id),
+            array('%s', '%s'),
+            array('%d')
+        );
+        
+        if ($result !== false) {
+            wp_send_json_success(array(
+                'message' => 'Order status updated successfully',
+                'status' => $new_status
+            ));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to update order status'));
         }
     }
 }
