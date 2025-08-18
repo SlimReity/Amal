@@ -16,6 +16,7 @@ class Amal_Store {
     
     private function load_dependencies() {
         require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-database.php';
+        require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-admin.php';
     }
     
     private function init_hooks() {
@@ -25,5 +26,6 @@ class Amal_Store {
     public function init() {
         // Plugin initialization logic
         $this->database = new Amal_Store_Database();
+        $this->admin = new Amal_Store_Admin();
     }
 }

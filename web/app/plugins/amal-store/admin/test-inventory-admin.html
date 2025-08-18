@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Inventory Management Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007cba;
+            padding-bottom: 10px;
+        }
+        .feature-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: '✅ ';
+            color: green;
+        }
+        .demo-link {
+            display: inline-block;
+            background: #007cba;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 10px 10px 0;
+        }
+        .demo-link:hover {
+            background: #005a87;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏪 Amal Store - Admin Inventory Management</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Demo Note:</strong> This is a test page for the Admin Inventory Management UI. 
+            In a real environment, you would need proper authentication and database setup.
+        </div>
+        
+        <div class="feature-section">
+            <h2>📋 Implemented Features</h2>
+            <ul class="feature-list">
+                <li>Admin user type support in authentication system</li>
+                <li>Admin-only access control for inventory management</li>
+                <li>Responsive inventory list view with search and pagination</li>
+                <li>Add new inventory items with form validation</li>
+                <li>Edit existing inventory items</li>
+                <li>Delete items with confirmation</li>
+                <li>Activate/deactivate items without deletion</li>
+                <li>Image URL support with preview functionality</li>
+                <li>Form validation for required fields, price, and stock</li>
+                <li>AJAX-powered interface for smooth user experience</li>
+                <li>Mobile-responsive design</li>
+            </ul>
+        </div>
+        
+        <div class="feature-section">
+            <h2>🎯 Form Validation</h2>
+            <ul class="feature-list">
+                <li>Title: Required, maximum 255 characters</li>
+                <li>Category: Required, maximum 100 characters</li>
+                <li>Price: Required, must be positive decimal number</li>
+                <li>Stock Quantity: Required, must be non-negative integer</li>
+                <li>Image URL: Optional, must be valid URL format</li>
+                <li>Description: Optional text area</li>
+                <li>Active Status: Checkbox for item availability</li>
+            </ul>
+        </div>
+        
+        <div class="feature-section">
+            <h2>🔐 Access Control</h2>
+            <p>The system now supports three user types:</p>
+            <ul class="feature-list">
+                <li>pet_owner: Regular customers</li>
+                <li>service_provider: Service providers</li>
+                <li>admin: Site administrators with inventory management access</li>
+            </ul>
+        </div>
+        
+        <div class="feature-section">
+            <h2>🔗 Demo Links</h2>
+            <p>The following links would work in a properly configured environment:</p>
+            <a href="/admin/inventory/" class="demo-link">📦 Inventory List</a>
+            <a href="/admin/inventory/add" class="demo-link">➕ Add New Item</a>
+            <a href="/admin/inventory/edit?id=1" class="demo-link">✏️ Edit Item (Demo)</a>
+        </div>
+        
+        <div class="feature-section">
+            <h2>📁 File Structure</h2>
+            <div class="code-block">web/app/plugins/amal-store/
+├── includes/
+│   ├── class-amal-store.php (updated)
+│   ├── class-amal-store-database.php 
+│   └── class-amal-store-admin.php (new)
+├── admin/
+│   ├── pages/
+│   │   ├── inventory-list.php (new)
+│   │   └── item-form.php (new)
+│   └── assets/
+│       ├── admin.css (new)
+│       └── admin.js (new)
+└── amal-store.php</div>
+        </div>
+        
+        <div class="feature-section">
+            <h2>🛠️ Setup Requirements</h2>
+            <ul class="feature-list">
+                <li>Database tables created (wp_amal_items, wp_amal_orders, wp_amal_order_items)</li>
+                <li>Admin user with user_type = 'admin' in wp_amal_users table</li>
+                <li>WordPress with Amal Store plugin activated</li>
+                <li>Session management enabled</li>
+                <li>Proper URL rewriting/routing for admin pages</li>
+            </ul>
+        </div>
+        
+        <div class="feature-section">
+            <h2>🧪 Testing</h2>
+            <p>To test the admin functionality:</p>
+            <ol>
+                <li>Create an admin user in the database</li>
+                <li>Log in as admin</li>
+                <li>Navigate to /admin/inventory/</li>
+                <li>Test adding, editing, and deleting items</li>
+                <li>Test form validation</li>
+                <li>Test image preview functionality</li>
+                <li>Test responsive design on mobile devices</li>
+            </ol>
+        </div>
+        
+        <div class="feature-section">
+            <h2>💾 Sample Admin User SQL</h2>
+            <div class="code-block">-- Create a sample admin user
+INSERT INTO wp_amal_users (email, password_hash, first_name, last_name, user_type, is_active, email_verified) 
+VALUES ('admin@amal.com', '$2y$10$example_hash_here', 'Admin', 'User', 'admin', 1, 1);</div>
+        </div>
+    </div>
+</body>
+</html>

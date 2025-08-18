@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS wp_amal_users (
     password_hash varchar(255) NOT NULL,
     first_name varchar(50) DEFAULT '',
     last_name varchar(50) DEFAULT '',
-    user_type enum('pet_owner', 'service_provider') DEFAULT 'pet_owner',
+    user_type enum('pet_owner', 'service_provider', 'admin') DEFAULT 'pet_owner',
     registration_date datetime DEFAULT CURRENT_TIMESTAMP,
     last_login datetime DEFAULT NULL,
     is_active tinyint(1) DEFAULT 1,
