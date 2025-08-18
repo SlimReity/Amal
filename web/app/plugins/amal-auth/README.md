@@ -30,18 +30,31 @@ A secure, production-ready user login and registration system for the Amal pet s
 - **Real-time Validation**: Password strength and email format checking
 - **Accessibility**: Proper labels, focus indicators, keyboard navigation
 
+### ✅ Profile Management System (NEW!)
+- **User Profiles**: Comprehensive profile management with personal details and preferences
+- **Pet Management**: Add, edit, and manage pets with photos and health information
+- **Service Provider Tools**: Manage services, pricing, and availability (for service providers)
+- **Booking History**: View and track service bookings and activity
+- **File Uploads**: Secure image upload for profiles and pets
+- **Responsive Interface**: Tabbed interface optimized for all devices
+
 ## 📁 File Structure
 
 ```
 web/app/plugins/amal-auth/
 ├── amal-auth.php                    # Main plugin file
 ├── assets/
-│   ├── amal-auth.js                # Frontend JavaScript (AJAX forms)
-│   └── amal-auth.css               # Styling for forms
+│   ├── amal-auth.js                # Frontend JavaScript (AJAX forms + profile management)
+│   └── amal-auth.css               # Styling for forms and profile interface
 ├── includes/
-│   └── helper-functions.php        # Session management utilities
+│   └── helper-functions.php        # Session management + profile utilities
+├── templates/
+│   └── profile-management.php      # Profile management interface template
 ├── users.sql                       # Generated SQL statements
-├── test-auth.php                   # Test page for functionality
+├── profile-management-migration.sql # Database migration for new features
+├── test-auth.php                   # Test page for authentication
+├── test-profile-management.php     # Test page for profile features
+├── PROFILE_MANAGEMENT_DOCS.md      # Detailed profile system documentation
 └── README.md                       # This documentation
 ```
 
@@ -77,10 +90,23 @@ Use WordPress shortcodes in posts, pages, or theme templates:
 
 // User info display (for logged-in users)
 [amal_user_info]
+
+// Profile management interface (NEW!)
+[amal_profile_management]
+```
+
+### 4. Database Migration (Profile Management)
+
+If using the new profile management features, run the migration:
+
+```bash
+# Import the profile management migration
+mysql -u username -p database_name < profile-management-migration.sql
 ```
 
 ## 🏗️ Database Schema
 
+### Core Users Table
 ```sql
 CREATE TABLE wp_amal_users (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -88,6 +114,13 @@ CREATE TABLE wp_amal_users (
     password_hash varchar(255) NOT NULL,
     first_name varchar(50) DEFAULT '',
     last_name varchar(50) DEFAULT '',
+    phone varchar(20) DEFAULT '',                    -- NEW
+    address text DEFAULT '',                         -- NEW  
+    profile_picture varchar(255) DEFAULT '',         -- NEW
+    notification_email tinyint(1) DEFAULT 1,        -- NEW
+    notification_push tinyint(1) DEFAULT 1,         -- NEW
+    notification_sms tinyint(1) DEFAULT 0,          -- NEW
+    subscription_type enum('free', 'premium') DEFAULT 'free', -- NEW
     user_type enum('pet_owner', 'service_provider') DEFAULT 'pet_owner',
     registration_date datetime DEFAULT CURRENT_TIMESTAMP,
     last_login datetime DEFAULT NULL,
@@ -99,6 +132,13 @@ CREATE TABLE wp_amal_users (
     UNIQUE KEY email (email)
 );
 ```
+
+### New Profile Management Tables
+- **wp_amal_pets**: Pet information and photos
+- **wp_amal_services**: Service provider offerings  
+- **wp_amal_bookings**: Service booking records
+
+See `PROFILE_MANAGEMENT_DOCS.md` for complete schema details.
 
 ## 🔧 Usage Examples
 
@@ -146,6 +186,45 @@ AmalAuthHelper::update_user($user_id, [
 // Get user statistics
 $pet_owners = AmalAuthHelper::get_user_count_by_type('pet_owner');
 $service_providers = AmalAuthHelper::get_user_count_by_type('service_provider');
+```
+
+### Profile Management Functions (NEW!)
+
+```php
+// Get user's pets
+$pets = AmalAuthHelper::get_user_pets($user_id);
+
+// Add new pet
+$pet_id = AmalAuthHelper::add_pet($user_id, [
+    'name' => 'Buddy',
+    'type' => 'dog',
+    'breed' => 'Golden Retriever',
+    'age' => 3,
+    'weight' => 25.5
+]);
+
+// Get user's services (for service providers)
+$services = AmalAuthHelper::get_user_services($user_id);
+
+// Add new service
+$service_id = AmalAuthHelper::add_service($user_id, [
+    'title' => 'Dog Walking Service',
+    'category' => 'dog_walking',
+    'description' => 'Professional dog walking in your neighborhood',
+    'price' => 25.00,
+    'location' => 'Downtown Area'
+]);
+
+// Get user's bookings
+$bookings = AmalAuthHelper::get_user_bookings($user_id);
+
+// Update profile information
+AmalAuthHelper::update_user_profile($user_id, [
+    'phone' => '+1-555-0123',
+    'address' => '123 Main St, City, State',
+    'notification_email' => 1,
+    'subscription_type' => 'premium'
+]);
 ```
 
 ### AJAX Integration
