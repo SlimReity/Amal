@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amal Store - Storefront Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .demo-header {
+            background: #0073aa;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .demo-content {
+            padding: 30px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #0073aa;
+        }
+        .code-sample {
+            background: #f8f8f8;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .mockup-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .file-tree {
+            background: #f8f8f8;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .implementation-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🏪 Amal Store - Storefront & Item Details Implementation</h1>
+            <p>Complete frontend implementation for the pet store e-commerce platform</p>
+        </div>
+        
+        <div class="demo-content">
+            <h2>📋 Implementation Overview</h2>
+            <p>The Amal Store plugin has been extended with complete frontend functionality for displaying products and handling user interactions. The implementation includes:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏪 Storefront Display</h3>
+                    <ul>
+                        <li>Grid layout for product items</li>
+                        <li>Category filtering</li>
+                        <li>Search functionality</li>
+                        <li>Pagination support</li>
+                        <li>Only shows active items</li>
+                        <li>Stock quantity display</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📱 Item Detail Pages</h3>
+                    <ul>
+                        <li>Complete product information</li>
+                        <li>Image display</li>
+                        <li>Description and details</li>
+                        <li>Add to cart functionality</li>
+                        <li>Quantity selector</li>
+                        <li>Stock validation</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🎨 Responsive Design</h3>
+                    <ul>
+                        <li>Mobile-first approach</li>
+                        <li>Flexible grid system</li>
+                        <li>Touch-friendly interface</li>
+                        <li>Accessible navigation</li>
+                        <li>Professional styling</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>⚡ Interactive Features</h3>
+                    <ul>
+                        <li>AJAX add to cart</li>
+                        <li>Real-time feedback</li>
+                        <li>Form validation</li>
+                        <li>Auto-submit filters</li>
+                        <li>Loading states</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>🚀 Usage Instructions</h2>
+            
+            <h3>1. Display Storefront</h3>
+            <p>Create a WordPress page and use the custom "Store" template, or add the shortcode:</p>
+            <div class="code-sample">
+[amal_storefront per_page="12" show_filters="yes" show_search="yes"]
+            </div>
+            
+            <h3>2. Display Item Details</h3>
+            <p>Create a WordPress page with the "Item Detail" template, or use the shortcode:</p>
+            <div class="code-sample">
+[amal_item_detail item_id="123"]
+            </div>
+            <p><em>Note: If no item_id is provided, it will look for ?item_id=123 in the URL</em></p>
+            
+            <h3>3. URL Structure</h3>
+            <div class="code-sample">
+Store Page: /store/
+Item Detail: /store/?item_id=123
+With Filters: /store/?category=Food&search=dog&store_page=2
+            </div>
+
+            <h2>📁 File Structure</h2>
+            <div class="file-tree">
+web/app/plugins/amal-store/
+├── includes/
+│   ├── class-amal-store.php              # Extended main class
+│   ├── class-amal-store-database.php     # Existing database class
+│   └── class-amal-store-frontend.php     # NEW: Frontend functionality
+├── templates/
+│   ├── storefront.php                    # NEW: Storefront template
+│   └── item-detail.php                   # NEW: Item detail template
+├── assets/
+│   ├── css/
+│   │   └── frontend.css                  # NEW: Responsive styles
+│   └── js/
+│       └── frontend.js                   # NEW: Interactive features
+└── tests/
+    └── test-frontend.php                 # NEW: Frontend tests
+
+web/app/themes/Amal_Sage/resources/views/
+├── template-store.blade.php              # NEW: Store page template
+└── template-item-detail.blade.php        # NEW: Item detail template
+            </div>
+
+            <h2>🎯 Acceptance Criteria Compliance</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>✅ Only Active Items Shown</h3>
+                    <p>The <code>get_items()</code> method includes <code>WHERE is_active = 1</code> in all queries.</p>
+                    <div class="code-sample">$where = "WHERE is_active = 1";</div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>✅ Pagination & Filtering Work</h3>
+                    <p>Implemented with URL parameters and database LIMIT/OFFSET:</p>
+                    <div class="code-sample">?store_page=2&category=Food&search=dog</div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>✅ Item Detail from Database</h3>
+                    <p>Direct database queries load item details:</p>
+                    <div class="code-sample">get_item($item_id) // Loads from wp_amal_items</div>
+                </div>
+            </div>
+
+            <h2>🔧 Technical Implementation</h2>
+            
+            <h3>Database Integration</h3>
+            <p>The frontend directly queries the existing <code>wp_amal_items</code> table:</p>
+            <div class="code-sample">
+// Get active items with filtering
+SELECT * FROM wp_amal_items 
+WHERE is_active = 1 
+  AND category = %s 
+  AND (title LIKE %s OR description LIKE %s)
+ORDER BY created_at DESC 
+LIMIT 12 OFFSET 0
+            </div>
+            
+            <h3>WordPress Integration</h3>
+            <p>Uses WordPress hooks and shortcodes for seamless integration:</p>
+            <div class="code-sample">
+// Register shortcodes
+add_shortcode('amal_storefront', array($this, 'render_storefront'));
+add_shortcode('amal_item_detail', array($this, 'render_item_detail'));
+
+// Handle AJAX requests
+add_action('wp_ajax_amal_add_to_cart', array($this, 'handle_add_to_cart'));
+            </div>
+
+            <div class="implementation-note">
+                <h3>📝 Next Steps for Full Implementation</h3>
+                <ul>
+                    <li><strong>WordPress Setup:</strong> Activate the plugin and create store pages</li>
+                    <li><strong>Sample Data:</strong> Add some test items to the database</li>
+                    <li><strong>Cart Integration:</strong> Connect with WooCommerce or custom cart system</li>
+                    <li><strong>Theme Styling:</strong> Integrate with existing theme colors and fonts</li>
+                    <li><strong>SEO:</strong> Add structured data and meta tags</li>
+                </ul>
+            </div>
+
+            <h2>🎨 Visual Preview</h2>
+            <div class="mockup-image">
+                Storefront Grid Layout
+                <br>
+                (Responsive cards with filtering)
+            </div>
+            <div class="mockup-image">
+                Item Detail Page
+                <br>
+                (Image, description, add to cart)
+            </div>
+
+            <h2>✨ Key Features Implemented</h2>
+            <ul>
+                <li>✅ <strong>Active Items Only:</strong> Filters out inactive products automatically</li>
+                <li>✅ <strong>Category Filtering:</strong> Dropdown filter with all available categories</li>
+                <li>✅ <strong>Search Functionality:</strong> Search by title and description</li>
+                <li>✅ <strong>Pagination:</strong> Navigate through multiple pages of results</li>
+                <li>✅ <strong>Stock Display:</strong> Shows available quantity and out-of-stock status</li>
+                <li>✅ <strong>Responsive Design:</strong> Works on desktop, tablet, and mobile</li>
+                <li>✅ <strong>AJAX Cart:</strong> Add items without page reload</li>
+                <li>✅ <strong>URL-based Navigation:</strong> Bookmarkable filters and item details</li>
+                <li>✅ <strong>WordPress Integration:</strong> Uses shortcodes and templates</li>
+                <li>✅ <strong>Security:</strong> Nonce verification and data sanitization</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

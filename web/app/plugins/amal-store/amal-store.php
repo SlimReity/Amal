@@ -27,7 +27,15 @@ function amal_store_init() {
 add_action('plugins_loaded', 'amal_store_init');
 
 // Activation hook
-register_activation_hook(__FILE__, array('Amal_Store_Database', 'create_tables'));
+function amal_store_activate() {
+    require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-database.php';
+    Amal_Store_Database::create_tables();
+}
+register_activation_hook(__FILE__, 'amal_store_activate');
 
 // Deactivation hook
-register_deactivation_hook(__FILE__, array('Amal_Store_Database', 'drop_tables'));
+function amal_store_deactivate() {
+    require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-database.php';
+    Amal_Store_Database::drop_tables();
+}
+register_deactivation_hook(__FILE__, 'amal_store_deactivate');
