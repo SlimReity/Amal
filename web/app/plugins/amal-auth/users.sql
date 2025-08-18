@@ -1,5 +1,5 @@
 -- Amal Authentication System Database Schema
--- Generated on 2024-08-17 00:13:00
+-- Generated on 2025-08-17 11:16:20
 
 CREATE TABLE IF NOT EXISTS wp_amal_users (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -16,6 +16,6 @@ CREATE TABLE IF NOT EXISTS wp_amal_users (
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY email (email)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 
 -- Sample INSERT statements will be added here when users register
