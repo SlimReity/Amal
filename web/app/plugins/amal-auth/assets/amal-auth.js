@@ -333,7 +333,7 @@ jQuery(document).ready(function($) {
                         $(targetInput).val(response.data.url);
                         
                         // Update preview
-                        if ($(this).attr('id') === 'profile_picture_file') {
+                        if (inputId === 'profile_picture_file') {
                             if (previewContainer.length) {
                                 previewContainer.attr('src', response.data.url);
                             } else {
