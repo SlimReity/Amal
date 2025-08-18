@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
         <nav class="tab-nav">
             <button class="tab-btn active" data-tab="profile-info">Profile Info</button>
             <button class="tab-btn" data-tab="my-pets">My Pets</button>
-            <?php if (AmalAuthHelper::is_service_provider()): ?>
+            <?php if (method_exists('AmalAuthHelper', 'is_service_provider') && AmalAuthHelper::is_service_provider()): ?>
                 <button class="tab-btn" data-tab="my-services">My Services</button>
             <?php endif; ?>
             <button class="tab-btn" data-tab="my-bookings">My Bookings</button>
