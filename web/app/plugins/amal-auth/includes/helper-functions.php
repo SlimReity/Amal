@@ -339,6 +339,331 @@ class AmalAuthHelper
         
         return (int) $count;
     }
+    
+    // === PROFILE MANAGEMENT FUNCTIONS ===
+    
+    /**
+     * Update user profile information
+     * 
+     * @param int $user_id
+     * @param array $profile_data
+     * @return bool
+     */
+    public static function update_user_profile($user_id, $profile_data)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_users';
+        
+        // Sanitize allowed profile fields
+        $allowed_fields = [
+            'first_name', 'last_name', 'phone', 'address', 'profile_picture',
+            'notification_email', 'notification_push', 'notification_sms', 'subscription_type'
+        ];
+        
+        $update_data = [];
+        foreach ($profile_data as $key => $value) {
+            if (in_array($key, $allowed_fields)) {
+                $update_data[$key] = sanitize_text_field($value);
+            }
+        }
+        
+        if (empty($update_data)) {
+            return false;
+        }
+        
+        $update_data['updated_at'] = current_time('mysql');
+        
+        $result = $wpdb->update(
+            $table_name,
+            $update_data,
+            ['id' => $user_id],
+            null,
+            ['%d']
+        );
+        
+        return $result !== false;
+    }
+    
+    // === PET MANAGEMENT FUNCTIONS ===
+    
+    /**
+     * Get user's pets
+     * 
+     * @param int $user_id
+     * @return array
+     */
+    public static function get_user_pets($user_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_pets';
+        
+        $pets = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE owner_id = %d ORDER BY created_at DESC",
+                $user_id
+            )
+        );
+        
+        return $pets ?: [];
+    }
+    
+    /**
+     * Get single pet by ID
+     * 
+     * @param int $pet_id
+     * @param int $user_id (for security check)
+     * @return object|null
+     */
+    public static function get_pet($pet_id, $user_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_pets';
+        
+        $pet = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE id = %d AND owner_id = %d",
+                $pet_id,
+                $user_id
+            )
+        );
+        
+        return $pet;
+    }
+    
+    /**
+     * Add new pet
+     * 
+     * @param int $user_id
+     * @param array $pet_data
+     * @return int|false Pet ID on success, false on failure
+     */
+    public static function add_pet($user_id, $pet_data)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_pets';
+        
+        $pet_data = self::sanitize_input($pet_data);
+        $pet_data['owner_id'] = $user_id;
+        $pet_data['created_at'] = current_time('mysql');
+        
+        $result = $wpdb->insert(
+            $table_name,
+            $pet_data,
+            ['%d', '%s', '%s', '%s', '%d', '%f', '%s', '%s', '%s']
+        );
+        
+        return $result ? $wpdb->insert_id : false;
+    }
+    
+    /**
+     * Update pet information
+     * 
+     * @param int $pet_id
+     * @param int $user_id (for security check)
+     * @param array $pet_data
+     * @return bool
+     */
+    public static function update_pet($pet_id, $user_id, $pet_data)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_pets';
+        
+        // Verify ownership
+        $pet = self::get_pet($pet_id, $user_id);
+        if (!$pet) {
+            return false;
+        }
+        
+        $pet_data = self::sanitize_input($pet_data);
+        $pet_data['updated_at'] = current_time('mysql');
+        
+        $result = $wpdb->update(
+            $table_name,
+            $pet_data,
+            ['id' => $pet_id, 'owner_id' => $user_id],
+            null,
+            ['%d', '%d']
+        );
+        
+        return $result !== false;
+    }
+    
+    /**
+     * Delete pet
+     * 
+     * @param int $pet_id
+     * @param int $user_id (for security check)
+     * @return bool
+     */
+    public static function delete_pet($pet_id, $user_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_pets';
+        
+        $result = $wpdb->delete(
+            $table_name,
+            ['id' => $pet_id, 'owner_id' => $user_id],
+            ['%d', '%d']
+        );
+        
+        return $result !== false;
+    }
+    
+    // === SERVICE MANAGEMENT FUNCTIONS ===
+    
+    /**
+     * Get user's services (for service providers)
+     * 
+     * @param int $user_id
+     * @return array
+     */
+    public static function get_user_services($user_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_services';
+        
+        $services = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE provider_id = %d ORDER BY created_at DESC",
+                $user_id
+            )
+        );
+        
+        return $services ?: [];
+    }
+    
+    /**
+     * Get single service by ID
+     * 
+     * @param int $service_id
+     * @param int $user_id (for security check)
+     * @return object|null
+     */
+    public static function get_service($service_id, $user_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_services';
+        
+        $service = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE id = %d AND provider_id = %d",
+                $service_id,
+                $user_id
+            )
+        );
+        
+        return $service;
+    }
+    
+    /**
+     * Add new service
+     * 
+     * @param int $user_id
+     * @param array $service_data
+     * @return int|false Service ID on success, false on failure
+     */
+    public static function add_service($user_id, $service_data)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_services';
+        
+        $service_data = self::sanitize_input($service_data);
+        $service_data['provider_id'] = $user_id;
+        $service_data['created_at'] = current_time('mysql');
+        
+        $result = $wpdb->insert(
+            $table_name,
+            $service_data,
+            ['%d', '%s', '%s', '%s', '%f', '%s', '%s', '%d', '%s']
+        );
+        
+        return $result ? $wpdb->insert_id : false;
+    }
+    
+    /**
+     * Update service information
+     * 
+     * @param int $service_id
+     * @param int $user_id (for security check)
+     * @param array $service_data
+     * @return bool
+     */
+    public static function update_service($service_id, $user_id, $service_data)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_services';
+        
+        // Verify ownership
+        $service = self::get_service($service_id, $user_id);
+        if (!$service) {
+            return false;
+        }
+        
+        $service_data = self::sanitize_input($service_data);
+        $service_data['updated_at'] = current_time('mysql');
+        
+        $result = $wpdb->update(
+            $table_name,
+            $service_data,
+            ['id' => $service_id, 'provider_id' => $user_id],
+            null,
+            ['%d', '%d']
+        );
+        
+        return $result !== false;
+    }
+    
+    /**
+     * Delete service
+     * 
+     * @param int $service_id
+     * @param int $user_id (for security check)
+     * @return bool
+     */
+    public static function delete_service($service_id, $user_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'amal_services';
+        
+        $result = $wpdb->delete(
+            $table_name,
+            ['id' => $service_id, 'provider_id' => $user_id],
+            ['%d', '%d']
+        );
+        
+        return $result !== false;
+    }
+    
+    // === BOOKING MANAGEMENT FUNCTIONS ===
+    
+    /**
+     * Get user's bookings
+     * 
+     * @param int $user_id
+     * @return array
+     */
+    public static function get_user_bookings($user_id)
+    {
+        global $wpdb;
+        $bookings_table = $wpdb->prefix . 'amal_bookings';
+        $services_table = $wpdb->prefix . 'amal_services';
+        $pets_table = $wpdb->prefix . 'amal_pets';
+        
+        $bookings = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT b.*, s.title as service_title, s.category as service_category, 
+                        p.name as pet_name 
+                 FROM $bookings_table b
+                 LEFT JOIN $services_table s ON b.service_id = s.id
+                 LEFT JOIN $pets_table p ON b.pet_id = p.id
+                 WHERE b.user_id = %d 
+                 ORDER BY b.booking_date DESC",
+                $user_id
+            )
+        );
+        
+        return $bookings ?: [];
+    }
 }
 
 /**
