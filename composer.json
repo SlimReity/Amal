@@ -65,6 +65,10 @@
   },
   "scripts": {
     "lint": "pint --test",
-    "lint:fix": "pint"
+    "lint:fix": "pint",
+    "test": "php tests/run-tests.php",
+    "test:unit": "php tests/run-tests.php unit",
+    "test:integration": "php tests/run-tests.php integration", 
+    "test:e2e": "php tests/run-tests.php e2e"
   }
 }
