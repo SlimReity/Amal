@@ -21,10 +21,11 @@ $last_name = get_user_meta($user_id, 'last_name', true);
 $phone = get_user_meta($user_id, 'phone', true);
 $address = get_user_meta($user_id, 'address', true);
 
-// Get pets, services, and bookings (these would be from custom tables or post types)
+// Get pets, services, bookings, and orders (these would be from custom tables or post types)
 $pets = apply_filters('amal_get_user_pets', [], $user_id);
 $services = apply_filters('amal_get_user_services', [], $user_id);
 $bookings = apply_filters('amal_get_user_bookings', [], $user_id);
+$orders = apply_filters('amal_get_user_orders', [], $user_id);
 ?>
 
 <div class="amal-profile-container">
@@ -84,6 +85,7 @@ $bookings = apply_filters('amal_get_user_bookings', [], $user_id);
             <button class="amal-tab-btn active" data-tab="profile"><?php esc_html_e('Profile Info', 'amal-profile-management'); ?></button>
             <button class="amal-tab-btn" data-tab="pets"><?php esc_html_e('My Pets', 'amal-profile-management'); ?></button>
             <button class="amal-tab-btn" data-tab="services"><?php esc_html_e('My Services', 'amal-profile-management'); ?></button>
+            <button class="amal-tab-btn" data-tab="orders"><?php esc_html_e('My Orders', 'amal-profile-management'); ?></button>
             <button class="amal-tab-btn" data-tab="bookings"><?php esc_html_e('My Bookings', 'amal-profile-management'); ?></button>
         </div>
         
@@ -193,6 +195,57 @@ $bookings = apply_filters('amal_get_user_bookings', [], $user_id);
                 <?php endif; ?>
             </div>
             <button class="amal-btn amal-btn-add-new" data-type="service"><?php esc_html_e('Add New Service', 'amal-profile-management'); ?></button>
+        </div>
+        
+        <div class="amal-tab-content" id="amal-tab-orders">
+            <h3><?php esc_html_e('My Orders', 'amal-profile-management'); ?></h3>
+            <div class="amal-orders-container">
+                <?php if (!empty($orders)) : ?>
+                    <?php foreach ($orders as $order) : ?>
+                        <?php 
+                        $status_class = 'amal-status-' . strtolower($order['status']);
+                        $order_date = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
+                        ?>
+                        <div class="amal-order-card" data-id="<?php echo esc_attr($order['id']); ?>">
+                            <div class="amal-order-header">
+                                <h4 class="amal-card-title"><?php echo sprintf(esc_html__('Order #%d', 'amal-profile-management'), $order['id']); ?></h4>
+                                <span class="amal-order-status <?php echo esc_attr($status_class); ?>"><?php echo esc_html(ucfirst($order['status'])); ?></span>
+                            </div>
+                            <p class="amal-card-info"><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php echo esc_html($order_date); ?></p>
+                            <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> $<?php echo esc_html(number_format($order['total_price'], 2)); ?></p>
+                            <button class="amal-btn amal-btn-view-order" data-order-id="<?php echo esc_attr($order['id']); ?>"><?php esc_html_e('View Details', 'amal-profile-management'); ?></button>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <div class="amal-order-card">
+                        <div class="amal-order-header">
+                            <h4 class="amal-card-title"><?php esc_html_e('Order #1', 'amal-profile-management'); ?></h4>
+                            <span class="amal-order-status amal-status-delivered"><?php esc_html_e('Delivered', 'amal-profile-management'); ?></span>
+                        </div>
+                        <p class="amal-card-info"><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php esc_html_e('August 15, 2024 at 10:30 AM', 'amal-profile-management'); ?></p>
+                        <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php esc_html_e('$89.99', 'amal-profile-management'); ?></p>
+                        <button class="amal-btn amal-btn-view-order" data-order-id="1"><?php esc_html_e('View Details', 'amal-profile-management'); ?></button>
+                    </div>
+                    <div class="amal-order-card">
+                        <div class="amal-order-header">
+                            <h4 class="amal-card-title"><?php esc_html_e('Order #2', 'amal-profile-management'); ?></h4>
+                            <span class="amal-order-status amal-status-shipped"><?php esc_html_e('Shipped', 'amal-profile-management'); ?></span>
+                        </div>
+                        <p class="amal-card-info"><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php esc_html_e('August 20, 2024 at 9:15 AM', 'amal-profile-management'); ?></p>
+                        <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php esc_html_e('$124.50', 'amal-profile-management'); ?></p>
+                        <button class="amal-btn amal-btn-view-order" data-order-id="2"><?php esc_html_e('View Details', 'amal-profile-management'); ?></button>
+                    </div>
+                    <div class="amal-order-card">
+                        <div class="amal-order-header">
+                            <h4 class="amal-card-title"><?php esc_html_e('Order #3', 'amal-profile-management'); ?></h4>
+                            <span class="amal-order-status amal-status-processing"><?php esc_html_e('Processing', 'amal-profile-management'); ?></span>
+                        </div>
+                        <p class="amal-card-info"><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php esc_html_e('August 22, 2024 at 2:22 PM', 'amal-profile-management'); ?></p>
+                        <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php esc_html_e('$45.99', 'amal-profile-management'); ?></p>
+                        <button class="amal-btn amal-btn-view-order" data-order-id="3"><?php esc_html_e('View Details', 'amal-profile-management'); ?></button>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
         
         <div class="amal-tab-content" id="amal-tab-bookings">
