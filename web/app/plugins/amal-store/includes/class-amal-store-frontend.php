@@ -24,10 +24,15 @@ class Amal_Store_Frontend {
         // Register shortcodes
         add_shortcode('amal_storefront', array($this, 'render_storefront'));
         add_shortcode('amal_item_detail', array($this, 'render_item_detail'));
+        add_shortcode('amal_cart', array($this, 'render_cart'));
+        add_shortcode('amal_checkout', array($this, 'render_checkout'));
+        add_shortcode('amal_order_confirmation', array($this, 'render_order_confirmation'));
         
         // Handle AJAX requests
         add_action('wp_ajax_amal_add_to_cart', array($this, 'handle_add_to_cart'));
         add_action('wp_ajax_nopriv_amal_add_to_cart', array($this, 'handle_add_to_cart'));
+        add_action('wp_ajax_amal_process_checkout', array($this, 'handle_checkout'));
+        add_action('wp_ajax_nopriv_amal_process_checkout', array($this, 'handle_checkout'));
         
         // Enqueue scripts and styles
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -243,6 +248,252 @@ class Amal_Store_Frontend {
         wp_send_json_success(array(
             'message' => 'Item added to cart successfully',
             'cart_count' => array_sum(array_column($cart, 'quantity'))
+        ));
+    }
+    
+    /**
+     * Render cart shortcode
+     */
+    public function render_cart($atts) {
+        $atts = shortcode_atts(array(
+            'show_checkout_button' => 'yes'
+        ), $atts);
+        
+        if (!session_id()) {
+            session_start();
+        }
+        
+        $cart = isset($_SESSION['amal_cart']) ? $_SESSION['amal_cart'] : array();
+        
+        if (empty($cart)) {
+            return '<div class="amal-cart-empty"><p>Your cart is empty.</p></div>';
+        }
+        
+        // Calculate total
+        $total = 0;
+        foreach ($cart as $cart_item) {
+            $total += $cart_item['price'] * $cart_item['quantity'];
+        }
+        
+        ob_start();
+        include AMAL_STORE_PLUGIN_DIR . 'templates/cart.php';
+        return ob_get_clean();
+    }
+    
+    /**
+     * Render checkout shortcode
+     */
+    public function render_checkout($atts) {
+        $atts = shortcode_atts(array(), $atts);
+        
+        if (!session_id()) {
+            session_start();
+        }
+        
+        $cart = isset($_SESSION['amal_cart']) ? $_SESSION['amal_cart'] : array();
+        
+        if (empty($cart)) {
+            return '<div class="amal-checkout-empty"><p>Your cart is empty. <a href="' . get_permalink() . '">Continue shopping</a></p></div>';
+        }
+        
+        // Calculate total
+        $total = 0;
+        foreach ($cart as $cart_item) {
+            $total += $cart_item['price'] * $cart_item['quantity'];
+        }
+        
+        ob_start();
+        include AMAL_STORE_PLUGIN_DIR . 'templates/checkout.php';
+        return ob_get_clean();
+    }
+    
+    /**
+     * Render order confirmation shortcode
+     */
+    public function render_order_confirmation($atts) {
+        $atts = shortcode_atts(array(
+            'order_id' => ''
+        ), $atts);
+        
+        $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : intval($atts['order_id']);
+        
+        if (!$order_id) {
+            return '<div class="amal-order-error"><p>Order not found.</p></div>';
+        }
+        
+        $order = $this->get_order($order_id);
+        
+        if (!$order) {
+            return '<div class="amal-order-error"><p>Order not found.</p></div>';
+        }
+        
+        $order_items = $this->get_order_items($order_id);
+        
+        ob_start();
+        include AMAL_STORE_PLUGIN_DIR . 'templates/order-confirmation.php';
+        return ob_get_clean();
+    }
+    
+    /**
+     * Handle checkout process
+     */
+    public function handle_checkout() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_store_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!session_id()) {
+            session_start();
+        }
+        
+        $cart = isset($_SESSION['amal_cart']) ? $_SESSION['amal_cart'] : array();
+        
+        if (empty($cart)) {
+            wp_send_json_error('Cart is empty');
+            return;
+        }
+        
+        // Check if user is logged in (required for orders)
+        if (!is_user_logged_in()) {
+            wp_send_json_error('Please log in to place an order');
+            return;
+        }
+        
+        $user_id = get_current_user_id();
+        
+        // Validate stock availability
+        foreach ($cart as $cart_item) {
+            $item = $this->get_item($cart_item['item_id']);
+            if (!$item) {
+                wp_send_json_error('Item ' . $cart_item['title'] . ' is no longer available');
+                return;
+            }
+            
+            if ($item->stock_qty < $cart_item['quantity']) {
+                wp_send_json_error('Not enough stock for ' . $cart_item['title'] . '. Available: ' . $item->stock_qty);
+                return;
+            }
+        }
+        
+        // Calculate total
+        $total = 0;
+        foreach ($cart as $cart_item) {
+            $total += $cart_item['price'] * $cart_item['quantity'];
+        }
+        
+        // Create order
+        $order_id = $this->create_order($user_id, $total, $cart);
+        
+        if (!$order_id) {
+            wp_send_json_error('Failed to create order');
+            return;
+        }
+        
+        // Clear cart
+        unset($_SESSION['amal_cart']);
+        
+        wp_send_json_success(array(
+            'message' => 'Order placed successfully',
+            'order_id' => $order_id
+        ));
+    }
+    
+    /**
+     * Create order in database
+     */
+    private function create_order($user_id, $total, $cart) {
+        // Start transaction
+        $this->wpdb->query('START TRANSACTION');
+        
+        try {
+            // Insert order
+            $orders_table = $this->wpdb->prefix . 'amal_orders';
+            $result = $this->wpdb->insert(
+                $orders_table,
+                array(
+                    'user_id' => $user_id,
+                    'total_price' => $total,
+                    'status' => 'pending'
+                ),
+                array('%d', '%f', '%s')
+            );
+            
+            if (!$result) {
+                throw new Exception('Failed to create order');
+            }
+            
+            $order_id = $this->wpdb->insert_id;
+            
+            // Insert order items and reduce stock
+            $order_items_table = $this->wpdb->prefix . 'amal_order_items';
+            
+            foreach ($cart as $cart_item) {
+                // Insert order item
+                $result = $this->wpdb->insert(
+                    $order_items_table,
+                    array(
+                        'order_id' => $order_id,
+                        'item_id' => $cart_item['item_id'],
+                        'quantity' => $cart_item['quantity'],
+                        'price' => $cart_item['price']
+                    ),
+                    array('%d', '%d', '%d', '%f')
+                );
+                
+                if (!$result) {
+                    throw new Exception('Failed to create order item');
+                }
+                
+                // Reduce stock using raw SQL
+                $result = $this->wpdb->query($this->wpdb->prepare(
+                    "UPDATE {$this->items_table} SET stock_qty = stock_qty - %d WHERE id = %d",
+                    $cart_item['quantity'],
+                    $cart_item['item_id']
+                ));
+                
+                if ($result === false) {
+                    throw new Exception('Failed to update stock');
+                }
+            }
+            
+            // Commit transaction
+            $this->wpdb->query('COMMIT');
+            
+            return $order_id;
+            
+        } catch (Exception $e) {
+            // Rollback transaction
+            $this->wpdb->query('ROLLBACK');
+            error_log('Order creation failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Get order by ID
+     */
+    private function get_order($order_id) {
+        $orders_table = $this->wpdb->prefix . 'amal_orders';
+        
+        return $this->wpdb->get_row($this->wpdb->prepare(
+            "SELECT * FROM {$orders_table} WHERE id = %d",
+            $order_id
+        ));
+    }
+    
+    /**
+     * Get order items
+     */
+    private function get_order_items($order_id) {
+        $order_items_table = $this->wpdb->prefix . 'amal_order_items';
+        
+        return $this->wpdb->get_results($this->wpdb->prepare(
+            "SELECT oi.*, i.title, i.image_url 
+             FROM {$order_items_table} oi 
+             JOIN {$this->items_table} i ON oi.item_id = i.id 
+             WHERE oi.order_id = %d",
+            $order_id
         ));
     }
 }
