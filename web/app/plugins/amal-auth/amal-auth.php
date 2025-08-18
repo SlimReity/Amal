@@ -38,10 +38,21 @@ class AmalAuthPlugin
         add_action('wp_ajax_nopriv_amal_login', [$this, 'handle_login']);
         add_action('wp_ajax_amal_logout', [$this, 'handle_logout']);
         
+        // Profile management AJAX handlers
+        add_action('wp_ajax_amal_update_profile', [$this, 'handle_update_profile']);
+        add_action('wp_ajax_amal_add_pet', [$this, 'handle_add_pet']);
+        add_action('wp_ajax_amal_update_pet', [$this, 'handle_update_pet']);
+        add_action('wp_ajax_amal_delete_pet', [$this, 'handle_delete_pet']);
+        add_action('wp_ajax_amal_add_service', [$this, 'handle_add_service']);
+        add_action('wp_ajax_amal_update_service', [$this, 'handle_update_service']);
+        add_action('wp_ajax_amal_delete_service', [$this, 'handle_delete_service']);
+        add_action('wp_ajax_amal_upload_image', [$this, 'handle_image_upload']);
+        
         // Add shortcodes
         add_shortcode('amal_register_form', [$this, 'register_form_shortcode']);
         add_shortcode('amal_login_form', [$this, 'login_form_shortcode']);
         add_shortcode('amal_user_info', [$this, 'user_info_shortcode']);
+        add_shortcode('amal_profile_management', [$this, 'profile_management_shortcode']);
         
         // Create database table on plugin activation
         register_activation_hook(__FILE__, [$this, 'create_database_table']);
@@ -74,22 +85,29 @@ class AmalAuthPlugin
     }
     
     /**
-     * Create database table for users
+     * Create database tables for users and profile management
      */
     public function create_database_table()
     {
         global $wpdb;
         
-        $table_name = $wpdb->prefix . 'amal_users';
-        
         $charset_collate = $wpdb->get_charset_collate();
         
-        $sql = "CREATE TABLE $table_name (
+        // Create users table with additional profile fields
+        $users_table = $wpdb->prefix . 'amal_users';
+        $users_sql = "CREATE TABLE $users_table (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             email varchar(100) NOT NULL,
             password_hash varchar(255) NOT NULL,
             first_name varchar(50) DEFAULT '',
             last_name varchar(50) DEFAULT '',
+            phone varchar(20) DEFAULT '',
+            address text DEFAULT '',
+            profile_picture varchar(255) DEFAULT '',
+            notification_email tinyint(1) DEFAULT 1,
+            notification_push tinyint(1) DEFAULT 1,
+            notification_sms tinyint(1) DEFAULT 0,
+            subscription_type enum('free', 'premium') DEFAULT 'free',
             user_type enum('pet_owner', 'service_provider') DEFAULT 'pet_owner',
             registration_date datetime DEFAULT CURRENT_TIMESTAMP,
             last_login datetime DEFAULT NULL,
@@ -101,8 +119,70 @@ class AmalAuthPlugin
             UNIQUE KEY email (email)
         ) $charset_collate;";
         
+        // Create pets table
+        $pets_table = $wpdb->prefix . 'amal_pets';
+        $pets_sql = "CREATE TABLE $pets_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            owner_id mediumint(9) NOT NULL,
+            name varchar(100) NOT NULL,
+            type varchar(50) NOT NULL,
+            breed varchar(100) DEFAULT '',
+            age int DEFAULT NULL,
+            weight decimal(5,2) DEFAULT NULL,
+            health_notes text DEFAULT '',
+            photo_url varchar(255) DEFAULT '',
+            created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+            updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY owner_id (owner_id)
+        ) $charset_collate;";
+        
+        // Create services table
+        $services_table = $wpdb->prefix . 'amal_services';
+        $services_sql = "CREATE TABLE $services_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            provider_id mediumint(9) NOT NULL,
+            title varchar(200) NOT NULL,
+            category varchar(100) NOT NULL,
+            description text DEFAULT '',
+            price decimal(10,2) NOT NULL,
+            availability text DEFAULT '',
+            location varchar(255) DEFAULT '',
+            is_active tinyint(1) DEFAULT 1,
+            created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+            updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY provider_id (provider_id),
+            KEY category (category),
+            KEY is_active (is_active)
+        ) $charset_collate;";
+        
+        // Create bookings table
+        $bookings_table = $wpdb->prefix . 'amal_bookings';
+        $bookings_sql = "CREATE TABLE $bookings_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            user_id mediumint(9) NOT NULL,
+            service_id mediumint(9) NOT NULL,
+            pet_id mediumint(9) DEFAULT NULL,
+            booking_date datetime NOT NULL,
+            status enum('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
+            notes text DEFAULT '',
+            total_amount decimal(10,2) NOT NULL,
+            created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+            updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id),
+            KEY service_id (service_id),
+            KEY pet_id (pet_id),
+            KEY booking_date (booking_date),
+            KEY status (status)
+        ) $charset_collate;";
+        
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        dbDelta($users_sql);
+        dbDelta($pets_sql);
+        dbDelta($services_sql);
+        dbDelta($bookings_sql);
         
         // Generate SQL file for manual execution
         $this->generate_sql_file();
@@ -485,6 +565,300 @@ class AmalAuthPlugin
             <button id="amal-logout-btn">Logout</button>
         </div>
         <?php
+        return ob_get_clean();
+    }
+    
+    // === PROFILE MANAGEMENT AJAX HANDLERS ===
+    
+    /**
+     * Handle profile update
+     */
+    public function handle_update_profile()
+    {
+        // Verify nonce for security
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in()) {
+            wp_send_json_error(['message' => 'Please log in to update your profile']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $profile_data = [
+            'first_name' => sanitize_text_field($_POST['first_name'] ?? ''),
+            'last_name' => sanitize_text_field($_POST['last_name'] ?? ''),
+            'phone' => sanitize_text_field($_POST['phone'] ?? ''),
+            'address' => sanitize_textarea_field($_POST['address'] ?? ''),
+            'notification_email' => (int)($_POST['notification_email'] ?? 1),
+            'notification_push' => (int)($_POST['notification_push'] ?? 1),
+            'notification_sms' => (int)($_POST['notification_sms'] ?? 0),
+            'subscription_type' => sanitize_text_field($_POST['subscription_type'] ?? 'free'),
+        ];
+        
+        $result = AmalAuthHelper::update_user_profile($user_id, $profile_data);
+        
+        if ($result) {
+            wp_send_json_success(['message' => 'Profile updated successfully']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to update profile']);
+        }
+    }
+    
+    /**
+     * Handle add pet
+     */
+    public function handle_add_pet()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in()) {
+            wp_send_json_error(['message' => 'Please log in to add a pet']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $pet_data = [
+            'name' => sanitize_text_field($_POST['name'] ?? ''),
+            'type' => sanitize_text_field($_POST['type'] ?? ''),
+            'breed' => sanitize_text_field($_POST['breed'] ?? ''),
+            'age' => (int)($_POST['age'] ?? 0),
+            'weight' => (float)($_POST['weight'] ?? 0),
+            'health_notes' => sanitize_textarea_field($_POST['health_notes'] ?? ''),
+            'photo_url' => sanitize_url($_POST['photo_url'] ?? ''),
+        ];
+        
+        $pet_id = AmalAuthHelper::add_pet($user_id, $pet_data);
+        
+        if ($pet_id) {
+            wp_send_json_success(['message' => 'Pet added successfully', 'pet_id' => $pet_id]);
+        } else {
+            wp_send_json_error(['message' => 'Failed to add pet']);
+        }
+    }
+    
+    /**
+     * Handle update pet
+     */
+    public function handle_update_pet()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in()) {
+            wp_send_json_error(['message' => 'Please log in to update pet']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $pet_id = (int)($_POST['pet_id'] ?? 0);
+        $pet_data = [
+            'name' => sanitize_text_field($_POST['name'] ?? ''),
+            'type' => sanitize_text_field($_POST['type'] ?? ''),
+            'breed' => sanitize_text_field($_POST['breed'] ?? ''),
+            'age' => (int)($_POST['age'] ?? 0),
+            'weight' => (float)($_POST['weight'] ?? 0),
+            'health_notes' => sanitize_textarea_field($_POST['health_notes'] ?? ''),
+            'photo_url' => sanitize_url($_POST['photo_url'] ?? ''),
+        ];
+        
+        $result = AmalAuthHelper::update_pet($pet_id, $user_id, $pet_data);
+        
+        if ($result) {
+            wp_send_json_success(['message' => 'Pet updated successfully']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to update pet']);
+        }
+    }
+    
+    /**
+     * Handle delete pet
+     */
+    public function handle_delete_pet()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in()) {
+            wp_send_json_error(['message' => 'Please log in to delete pet']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $pet_id = (int)($_POST['pet_id'] ?? 0);
+        
+        $result = AmalAuthHelper::delete_pet($pet_id, $user_id);
+        
+        if ($result) {
+            wp_send_json_success(['message' => 'Pet deleted successfully']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to delete pet']);
+        }
+    }
+    
+    /**
+     * Handle add service
+     */
+    public function handle_add_service()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in() || !AmalAuthHelper::is_service_provider()) {
+            wp_send_json_error(['message' => 'You must be a service provider to add services']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $service_data = [
+            'title' => sanitize_text_field($_POST['title'] ?? ''),
+            'category' => sanitize_text_field($_POST['category'] ?? ''),
+            'description' => sanitize_textarea_field($_POST['description'] ?? ''),
+            'price' => (float)($_POST['price'] ?? 0),
+            'availability' => sanitize_textarea_field($_POST['availability'] ?? ''),
+            'location' => sanitize_text_field($_POST['location'] ?? ''),
+            'is_active' => (int)($_POST['is_active'] ?? 1),
+        ];
+        
+        $service_id = AmalAuthHelper::add_service($user_id, $service_data);
+        
+        if ($service_id) {
+            wp_send_json_success(['message' => 'Service added successfully', 'service_id' => $service_id]);
+        } else {
+            wp_send_json_error(['message' => 'Failed to add service']);
+        }
+    }
+    
+    /**
+     * Handle update service
+     */
+    public function handle_update_service()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in() || !AmalAuthHelper::is_service_provider()) {
+            wp_send_json_error(['message' => 'You must be a service provider to update services']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $service_id = (int)($_POST['service_id'] ?? 0);
+        $service_data = [
+            'title' => sanitize_text_field($_POST['title'] ?? ''),
+            'category' => sanitize_text_field($_POST['category'] ?? ''),
+            'description' => sanitize_textarea_field($_POST['description'] ?? ''),
+            'price' => (float)($_POST['price'] ?? 0),
+            'availability' => sanitize_textarea_field($_POST['availability'] ?? ''),
+            'location' => sanitize_text_field($_POST['location'] ?? ''),
+            'is_active' => (int)($_POST['is_active'] ?? 1),
+        ];
+        
+        $result = AmalAuthHelper::update_service($service_id, $user_id, $service_data);
+        
+        if ($result) {
+            wp_send_json_success(['message' => 'Service updated successfully']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to update service']);
+        }
+    }
+    
+    /**
+     * Handle delete service
+     */
+    public function handle_delete_service()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in() || !AmalAuthHelper::is_service_provider()) {
+            wp_send_json_error(['message' => 'You must be a service provider to delete services']);
+            return;
+        }
+        
+        $user_id = AmalAuthHelper::get_current_user_id();
+        $service_id = (int)($_POST['service_id'] ?? 0);
+        
+        $result = AmalAuthHelper::delete_service($service_id, $user_id);
+        
+        if ($result) {
+            wp_send_json_success(['message' => 'Service deleted successfully']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to delete service']);
+        }
+    }
+    
+    /**
+     * Handle image upload
+     */
+    public function handle_image_upload()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_auth_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        if (!AmalAuthHelper::is_logged_in()) {
+            wp_send_json_error(['message' => 'Please log in to upload images']);
+            return;
+        }
+        
+        if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            wp_send_json_error(['message' => 'No file uploaded or upload error']);
+            return;
+        }
+        
+        $upload_dir = wp_upload_dir();
+        $amal_dir = $upload_dir['basedir'] . '/amal-images/';
+        
+        // Create directory if it doesn't exist
+        if (!file_exists($amal_dir)) {
+            wp_mkdir_p($amal_dir);
+        }
+        
+        $file = $_FILES['image'];
+        $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
+        
+        if (!in_array($file_ext, $allowed_exts)) {
+            wp_send_json_error(['message' => 'Invalid file type. Only JPG, PNG, and GIF allowed']);
+            return;
+        }
+        
+        $filename = uniqid() . '.' . $file_ext;
+        $filepath = $amal_dir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+            $file_url = $upload_dir['baseurl'] . '/amal-images/' . $filename;
+            wp_send_json_success(['message' => 'Image uploaded successfully', 'url' => $file_url]);
+        } else {
+            wp_send_json_error(['message' => 'Failed to upload image']);
+        }
+    }
+    
+    /**
+     * Profile management shortcode
+     */
+    public function profile_management_shortcode($atts)
+    {
+        if (!AmalAuthHelper::is_logged_in()) {
+            return '<p>Please log in to manage your profile. <a href="' . home_url('/login/') . '">Login here</a></p>';
+        }
+        
+        $user = AmalAuthHelper::get_current_user();
+        $pets = AmalAuthHelper::get_user_pets($user->id);
+        $services = AmalAuthHelper::is_service_provider() ? AmalAuthHelper::get_user_services($user->id) : [];
+        $bookings = AmalAuthHelper::get_user_bookings($user->id);
+        
+        ob_start();
+        include AMAL_AUTH_PLUGIN_PATH . 'templates/profile-management.php';
         return ob_get_clean();
     }
 }
