@@ -4,6 +4,7 @@ web/app/plugins/*
 !web/app/plugins/amal-auth/
 !web/app/plugins/amal-profile-management/
 !web/app/plugins/amal-store/
+!web/app/plugins/amal-social/
 web/app/mu-plugins/*/
 web/app/themes/twentytwentyfive/
 web/app/upgrade

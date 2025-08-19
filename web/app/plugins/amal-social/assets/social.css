@@ -1,0 +1,508 @@
+/**
+ * Amal Social Media Styles
+ * 
+ * @package AmalSocial
+ * @version 1.0.0
+ */
+
+/* Social Media Feed Styles */
+.amal-social-feed {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Post Card Styles */
+.amal-post-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    padding: 24px;
+    transition: box-shadow 0.3s ease;
+}
+
+.amal-post-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Post Header */
+.amal-post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.amal-user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    margin-right: 16px;
+    text-transform: uppercase;
+}
+
+.amal-user-info {
+    flex: 1;
+}
+
+.amal-user-name {
+    font-weight: 600;
+    color: #1a202c;
+    text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.amal-user-name:hover {
+    color: #3182ce;
+}
+
+.amal-user-type {
+    display: inline-block;
+    font-size: 12px;
+    color: #718096;
+    background: #f7fafc;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    text-transform: capitalize;
+}
+
+.amal-post-time {
+    font-size: 14px;
+    color: #a0aec0;
+    margin-top: 2px;
+}
+
+/* Post Content */
+.amal-post-content {
+    color: #2d3748;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+
+/* Post Actions */
+.amal-post-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.amal-reactions {
+    display: flex;
+    gap: 16px;
+}
+
+.amal-reaction-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.amal-reaction-btn:hover {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.amal-reaction-btn.active-like {
+    background: #f0fff4;
+    color: #38a169;
+}
+
+.amal-reaction-btn.active-dislike {
+    background: #fed7d7;
+    color: #e53e3e;
+}
+
+.amal-reaction-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.amal-comment-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.amal-comment-btn:hover {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.amal-comment-btn.active {
+    background: #ebf8ff;
+    color: #3182ce;
+}
+
+/* Comments Section */
+.amal-comments-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.amal-add-comment-form {
+    margin-bottom: 16px;
+}
+
+.amal-comment-input-group {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.amal-comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #cbd5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.amal-comment-input-container {
+    flex: 1;
+}
+
+.amal-comment-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.amal-comment-textarea:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.amal-comment-submit {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.amal-comment-submit button {
+    background: #3182ce;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.amal-comment-submit button:hover {
+    background: #2c5282;
+}
+
+.amal-comment-submit button:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+}
+
+/* Comments List */
+.amal-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.amal-comment {
+    display: flex;
+    gap: 12px;
+}
+
+.amal-comment-content {
+    flex: 1;
+}
+
+.amal-comment-bubble {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.amal-comment-author {
+    font-weight: 600;
+    font-size: 13px;
+    color: #2d3748;
+    margin-bottom: 4px;
+}
+
+.amal-comment-text {
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.amal-comment-time {
+    font-size: 12px;
+    color: #a0aec0;
+    margin-top: 4px;
+}
+
+/* Post Creation Form */
+.amal-create-post {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.amal-create-post-textarea {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    resize: none;
+    font-size: 15px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s ease;
+    margin-bottom: 16px;
+}
+
+.amal-create-post-textarea:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.amal-create-post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.amal-posting-as {
+    font-size: 14px;
+    color: #718096;
+}
+
+.amal-post-submit {
+    background: #3182ce;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.amal-post-submit:hover {
+    background: #2c5282;
+}
+
+.amal-post-submit:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+}
+
+/* Login Prompt */
+.amal-login-prompt {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.amal-login-prompt p {
+    color: #718096;
+    margin-bottom: 16px;
+}
+
+.amal-login-prompt a {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    margin: 0 8px;
+}
+
+.amal-login-prompt .login-btn {
+    background: #3182ce;
+    color: white;
+}
+
+.amal-login-prompt .login-btn:hover {
+    background: #2c5282;
+}
+
+.amal-login-prompt .register-btn {
+    background: #718096;
+    color: white;
+}
+
+.amal-login-prompt .register-btn:hover {
+    background: #4a5568;
+}
+
+/* Empty State */
+.amal-empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #a0aec0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .amal-post-card,
+    .amal-create-post {
+        margin-left: -12px;
+        margin-right: -12px;
+        border-radius: 0;
+    }
+    
+    .amal-post-actions {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .amal-reactions {
+        justify-content: space-around;
+    }
+    
+    .amal-create-post-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        text-align: center;
+    }
+}
+
+/* Loading States */
+.amal-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.amal-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    border-top-color: #3182ce;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Notification Styles */
+.amal-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+.amal-notification.success {
+    background: #f0fff4;
+    color: #38a169;
+    border: 1px solid #9ae6b4;
+}
+
+.amal-notification.error {
+    background: #fed7d7;
+    color: #e53e3e;
+    border: 1px solid #feb2b2;
+}
+
+.amal-notification.info {
+    background: #ebf8ff;
+    color: #3182ce;
+    border: 1px solid #90cdf4;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Accessibility */
+.amal-reaction-btn:focus,
+.amal-comment-btn:focus,
+.amal-comment-textarea:focus,
+.amal-create-post-textarea:focus,
+.amal-post-submit:focus {
+    outline: 2px solid #3182ce;
+    outline-offset: 2px;
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+    .amal-post-card,
+    .amal-create-post {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .amal-user-name {
+        color: #e2e8f0;
+    }
+    
+    .amal-post-content {
+        color: #cbd5e0;
+    }
+}
