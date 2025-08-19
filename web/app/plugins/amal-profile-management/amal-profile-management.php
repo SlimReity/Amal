@@ -106,6 +106,8 @@ class AmalProfileManagement
         add_action('wp_ajax_amal_delete_service', array($this, 'ajax_delete_service'));
         add_action('wp_ajax_amal_get_pets', array($this, 'ajax_get_pets'));
         add_action('wp_ajax_amal_get_services', array($this, 'ajax_get_services'));
+        add_action('wp_ajax_amal_get_orders', array($this, 'ajax_get_orders'));
+        add_action('wp_ajax_amal_get_order_details', array($this, 'ajax_get_order_details'));
 
         // Shortcodes
         add_shortcode('amal_profile_management', array($this, 'shortcode_profile_management'));
@@ -114,6 +116,7 @@ class AmalProfileManagement
         add_filter('amal_get_user_pets', array($this, 'get_demo_pets'), 10, 2);
         add_filter('amal_get_user_services', array($this, 'get_demo_services'), 10, 2);
         add_filter('amal_get_user_bookings', array($this, 'get_demo_bookings'), 10, 2);
+        add_filter('amal_get_user_orders', array($this, 'get_user_orders'), 10, 2);
     }
 
     /**
@@ -540,7 +543,7 @@ class AmalProfileManagement
                     'id' => 1,
                     'name' => 'Professional Dog Walking',
                     'category' => 'Dog Walking',
-                    'price' => '$25/hour',
+                    'price' => '25.00 CHF/hour',
                     'location' => 'Downtown Area',
                     'status' => 'Active',
                 ),
@@ -548,7 +551,7 @@ class AmalProfileManagement
                     'id' => 2,
                     'name' => 'Pet Sitting Service',
                     'category' => 'Pet Sitting',
-                    'price' => '$40/day',
+                    'price' => '40.00 CHF/day',
                     'location' => 'Your Home',
                     'status' => 'Active',
                 ),
@@ -575,7 +578,7 @@ class AmalProfileManagement
                     'service_name' => 'Dog Walking Service',
                     'date' => 'August 20, 2024 at 3:00 PM',
                     'pet_name' => 'Buddy',
-                    'amount' => '$25.00',
+                    'amount' => '25.00 CHF',
                     'status' => 'Confirmed',
                 ),
                 array(
@@ -583,7 +586,7 @@ class AmalProfileManagement
                     'service_name' => 'Grooming Service',
                     'date' => 'August 15, 2024 at 10:00 AM',
                     'pet_name' => 'Whiskers',
-                    'amount' => '$45.00',
+                    'amount' => '45.00 CHF',
                     'status' => 'Completed',
                 ),
             );
@@ -655,6 +658,312 @@ class AmalProfileManagement
             $this->create_tables();
             update_option('amal_profile_management_version', $this->version);
         }
+    }
+
+    /**
+     * Get user orders from store database
+     * 
+     * @since 1.0.0
+     * @param array $orders
+     * @param int $user_id
+     * @return array
+     */
+    public function get_user_orders($orders, $user_id)
+    {
+        global $wpdb;
+        
+        // Get orders from amal-store plugin tables
+        $orders_table = $wpdb->prefix . 'amal_orders';
+        $order_items_table = $wpdb->prefix . 'amal_order_items';
+        $items_table = $wpdb->prefix . 'amal_items';
+        
+        // Check if store plugin tables exist
+        if ($wpdb->get_var("SHOW TABLES LIKE '$orders_table'") != $orders_table) {
+            // Return demo data if store plugin tables don't exist
+            return $this->get_demo_orders();
+        }
+        
+        $user_orders = $wpdb->get_results($wpdb->prepare("
+            SELECT o.id, o.total_price, o.status, o.created_at, o.updated_at
+            FROM $orders_table o
+            WHERE o.user_id = %d
+            ORDER BY o.created_at DESC
+        ", $user_id), ARRAY_A);
+        
+        if (empty($user_orders)) {
+            return $this->get_demo_orders();
+        }
+        
+        return $user_orders;
+    }
+
+    /**
+     * Get demo orders data
+     * 
+     * @since 1.0.0
+     * @return array
+     */
+    private function get_demo_orders()
+    {
+        return array(
+            array(
+                'id' => 1,
+                'total_price' => '89.99',
+                'status' => 'delivered',
+                'created_at' => '2024-08-15 10:30:00',
+                'updated_at' => '2024-08-18 14:20:00',
+            ),
+            array(
+                'id' => 2,
+                'total_price' => '124.50',
+                'status' => 'shipped',
+                'created_at' => '2024-08-20 09:15:00',
+                'updated_at' => '2024-08-21 16:45:00',
+            ),
+            array(
+                'id' => 3,
+                'total_price' => '45.99',
+                'status' => 'processing',
+                'created_at' => '2024-08-22 14:22:00',
+                'updated_at' => '2024-08-22 14:22:00',
+            ),
+        );
+    }
+
+    /**
+     * Get order details including line items
+     * 
+     * @since 1.0.0
+     * @param int $order_id
+     * @param int $user_id
+     * @return array|false
+     */
+    public function get_order_details($order_id, $user_id)
+    {
+        global $wpdb;
+        
+        $orders_table = $wpdb->prefix . 'amal_orders';
+        $order_items_table = $wpdb->prefix . 'amal_order_items';
+        $items_table = $wpdb->prefix . 'amal_items';
+        
+        // Check if store plugin tables exist
+        if ($wpdb->get_var("SHOW TABLES LIKE '$orders_table'") != $orders_table) {
+            // Return demo data if store plugin tables don't exist
+            return $this->get_demo_order_details($order_id);
+        }
+        
+        // Get order info
+        $order = $wpdb->get_row($wpdb->prepare("
+            SELECT o.id, o.total_price, o.status, o.created_at, o.updated_at
+            FROM $orders_table o
+            WHERE o.id = %d AND o.user_id = %d
+        ", $order_id, $user_id), ARRAY_A);
+        
+        if (!$order) {
+            return false;
+        }
+        
+        // Get order items
+        $order_items = $wpdb->get_results($wpdb->prepare("
+            SELECT oi.quantity, oi.price, i.title, i.category, i.image_url
+            FROM $order_items_table oi
+            JOIN $items_table i ON oi.item_id = i.id
+            WHERE oi.order_id = %d
+        ", $order_id), ARRAY_A);
+        
+        $order['items'] = $order_items;
+        
+        return $order;
+    }
+
+    /**
+     * Get demo order details
+     * 
+     * @since 1.0.0
+     * @param int $order_id
+     * @return array|false
+     */
+    private function get_demo_order_details($order_id)
+    {
+        $demo_orders = array(
+            1 => array(
+                'id' => 1,
+                'total_price' => '89.99',
+                'status' => 'delivered',
+                'created_at' => '2024-08-15 10:30:00',
+                'updated_at' => '2024-08-18 14:20:00',
+                'items' => array(
+                    array(
+                        'title' => 'Premium Dog Food',
+                        'category' => 'Food',
+                        'quantity' => 2,
+                        'price' => '45.00',
+                        'image_url' => '',
+                    ),
+                ),
+            ),
+            2 => array(
+                'id' => 2,
+                'total_price' => '124.50',
+                'status' => 'shipped',
+                'created_at' => '2024-08-20 09:15:00',
+                'updated_at' => '2024-08-21 16:45:00',
+                'items' => array(
+                    array(
+                        'title' => 'Cat Litter Box',
+                        'category' => 'Accessories',
+                        'quantity' => 1,
+                        'price' => '89.99',
+                        'image_url' => '',
+                    ),
+                    array(
+                        'title' => 'Dog Leash',
+                        'category' => 'Accessories',
+                        'quantity' => 1,
+                        'price' => '24.50',
+                        'image_url' => '',
+                    ),
+                ),
+            ),
+            3 => array(
+                'id' => 3,
+                'total_price' => '45.99',
+                'status' => 'processing',
+                'created_at' => '2024-08-22 14:22:00',
+                'updated_at' => '2024-08-22 14:22:00',
+                'items' => array(
+                    array(
+                        'title' => 'Premium Dog Food',
+                        'category' => 'Food',
+                        'quantity' => 1,
+                        'price' => '45.99',
+                        'image_url' => '',
+                    ),
+                ),
+            ),
+        );
+        
+        return isset($demo_orders[$order_id]) ? $demo_orders[$order_id] : false;
+    }
+
+    /**
+     * AJAX handler for getting orders
+     * 
+     * @since 1.0.0
+     */
+    public function ajax_get_orders()
+    {
+        // Verify nonce
+        if (!wp_verify_nonce($_GET['nonce'], 'amal_profile_nonce')) {
+            wp_die('Security check failed');
+        }
+
+        // Check if user is logged in
+        if (!is_user_logged_in()) {
+            wp_send_json_error(array('message' => __('You must be logged in.', 'amal-profile-management')));
+        }
+
+        $user_id = get_current_user_id();
+        $orders = apply_filters('amal_get_user_orders', array(), $user_id);
+
+        ob_start();
+        if (!empty($orders)) {
+            foreach ($orders as $order) {
+                $status_class = 'amal-status-' . strtolower($order['status']);
+                $order_date = date('d.m.Y H:i', strtotime($order['created_at']));
+                ?>
+                <div class="amal-order-card" data-id="<?php echo esc_attr($order['id']); ?>">
+                    <div class="amal-order-header">
+                        <h4 class="amal-card-title"><?php echo sprintf(esc_html__('Order #%d', 'amal-profile-management'), $order['id']); ?></h4>
+                        <span class="amal-order-status <?php echo esc_attr($status_class); ?>"><?php echo esc_html(ucfirst($order['status'])); ?></span>
+                    </div>
+                    <p class="amal-card-info"><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php echo esc_html($order_date); ?></p>
+                    <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php echo esc_html(number_format($order['total_price'], 2)); ?> CHF</p>
+                    <button class="amal-btn amal-btn-view-order" data-order-id="<?php echo esc_attr($order['id']); ?>"><?php esc_html_e('View Details', 'amal-profile-management'); ?></button>
+                </div>
+                <?php
+            }
+        } else {
+            ?>
+            <div class="amal-no-orders">
+                <p><?php esc_html_e('No orders found.', 'amal-profile-management'); ?></p>
+            </div>
+            <?php
+        }
+        
+        $html = ob_get_clean();
+        wp_send_json_success(array('html' => $html));
+    }
+
+    /**
+     * AJAX handler for getting order details
+     * 
+     * @since 1.0.0
+     */
+    public function ajax_get_order_details()
+    {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_profile_nonce')) {
+            wp_die('Security check failed');
+        }
+
+        // Check if user is logged in
+        if (!is_user_logged_in()) {
+            wp_send_json_error(array('message' => __('You must be logged in.', 'amal-profile-management')));
+        }
+
+        $order_id = intval($_POST['order_id'] ?? 0);
+        if (!$order_id) {
+            wp_send_json_error(array('message' => __('Invalid order ID.', 'amal-profile-management')));
+        }
+
+        $user_id = get_current_user_id();
+        $order = $this->get_order_details($order_id, $user_id);
+
+        if (!$order) {
+            wp_send_json_error(array('message' => __('Order not found.', 'amal-profile-management')));
+        }
+
+        ob_start();
+        $status_class = 'amal-status-' . strtolower($order['status']);
+        $order_date = date('d.m.Y H:i', strtotime($order['created_at']));
+        ?>
+        <div class="amal-order-details">
+            <div class="amal-order-summary">
+                <h4><?php echo sprintf(esc_html__('Order #%d Details', 'amal-profile-management'), $order['id']); ?></h4>
+                <p><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php echo esc_html($order_date); ?></p>
+                <p><strong><?php esc_html_e('Status:', 'amal-profile-management'); ?></strong> <span class="amal-order-status <?php echo esc_attr($status_class); ?>"><?php echo esc_html(ucfirst($order['status'])); ?></span></p>
+                <p><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php echo esc_html(number_format($order['total_price'], 2)); ?> CHF</p>
+            </div>
+            
+            <div class="amal-order-items">
+                <h5><?php esc_html_e('Order Items', 'amal-profile-management'); ?></h5>
+                <?php if (!empty($order['items'])) : ?>
+                    <div class="amal-items-list">
+                        <?php foreach ($order['items'] as $item) : ?>
+                            <div class="amal-item-row">
+                                <div class="amal-item-info">
+                                    <h6><?php echo esc_html($item['title']); ?></h6>
+                                    <p class="amal-item-category"><?php echo esc_html($item['category']); ?></p>
+                                </div>
+                                <div class="amal-item-details">
+                                    <p><strong><?php esc_html_e('Quantity:', 'amal-profile-management'); ?></strong> <?php echo esc_html($item['quantity']); ?></p>
+                                    <p><strong><?php esc_html_e('Price:', 'amal-profile-management'); ?></strong> <?php echo esc_html(number_format($item['price'], 2)); ?> CHF</p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <p><?php esc_html_e('No items found for this order.', 'amal-profile-management'); ?></p>
+                <?php endif; ?>
+            </div>
+            
+            <button class="amal-btn amal-btn-back-to-orders"><?php esc_html_e('Back to Orders', 'amal-profile-management'); ?></button>
+        </div>
+        <?php
+        
+        $html = ob_get_clean();
+        wp_send_json_success(array('html' => $html));
     }
 }
 

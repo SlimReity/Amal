@@ -95,6 +95,19 @@
             const itemType = $(this).data('type');
             handleAddNew(itemType);
         });
+
+        // View order details buttons
+        $(document).on('click', '.amal-btn-view-order', function(e) {
+            e.preventDefault();
+            const orderId = $(this).data('order-id');
+            handleViewOrderDetails(orderId);
+        });
+
+        // Back to orders button
+        $(document).on('click', '.amal-btn-back-to-orders', function(e) {
+            e.preventDefault();
+            refreshOrderList();
+        });
     }
 
     /**
@@ -279,6 +292,45 @@
         $('#amal-tab-services .amal-services-container').load(
             amalProfile.ajaxUrl + '?action=amal_get_services&nonce=' + amalProfile.nonce
         );
+    }
+
+    /**
+     * Refresh order list
+     */
+    function refreshOrderList() {
+        $('#amal-tab-orders .amal-orders-container').load(
+            amalProfile.ajaxUrl + '?action=amal_get_orders&nonce=' + amalProfile.nonce
+        );
+    }
+
+    /**
+     * Handle view order details
+     */
+    function handleViewOrderDetails(orderId) {
+        $.ajax({
+            url: amalProfile.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'amal_get_order_details',
+                order_id: orderId,
+                nonce: amalProfile.nonce
+            },
+            beforeSend: function() {
+                showLoading('#amal-tab-orders .amal-orders-container');
+            },
+            success: function(response) {
+                hideLoading('#amal-tab-orders .amal-orders-container');
+                if (response.success) {
+                    $('#amal-tab-orders .amal-orders-container').html(response.data.html);
+                } else {
+                    showMessage('error', response.data.message || amalProfile.messages.error);
+                }
+            },
+            error: function() {
+                hideLoading('#amal-tab-orders .amal-orders-container');
+                showMessage('error', amalProfile.messages.error);
+            }
+        });
     }
 
     /**
