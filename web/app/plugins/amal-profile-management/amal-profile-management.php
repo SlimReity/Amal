@@ -543,7 +543,7 @@ class AmalProfileManagement
                     'id' => 1,
                     'name' => 'Professional Dog Walking',
                     'category' => 'Dog Walking',
-                    'price' => '$25/hour',
+                    'price' => '25.00 CHF/hour',
                     'location' => 'Downtown Area',
                     'status' => 'Active',
                 ),
@@ -551,7 +551,7 @@ class AmalProfileManagement
                     'id' => 2,
                     'name' => 'Pet Sitting Service',
                     'category' => 'Pet Sitting',
-                    'price' => '$40/day',
+                    'price' => '40.00 CHF/day',
                     'location' => 'Your Home',
                     'status' => 'Active',
                 ),
@@ -578,7 +578,7 @@ class AmalProfileManagement
                     'service_name' => 'Dog Walking Service',
                     'date' => 'August 20, 2024 at 3:00 PM',
                     'pet_name' => 'Buddy',
-                    'amount' => '$25.00',
+                    'amount' => '25.00 CHF',
                     'status' => 'Confirmed',
                 ),
                 array(
@@ -586,7 +586,7 @@ class AmalProfileManagement
                     'service_name' => 'Grooming Service',
                     'date' => 'August 15, 2024 at 10:00 AM',
                     'pet_name' => 'Whiskers',
-                    'amount' => '$45.00',
+                    'amount' => '45.00 CHF',
                     'status' => 'Completed',
                 ),
             );
@@ -870,7 +870,7 @@ class AmalProfileManagement
         if (!empty($orders)) {
             foreach ($orders as $order) {
                 $status_class = 'amal-status-' . strtolower($order['status']);
-                $order_date = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
+                $order_date = date('d.m.Y H:i', strtotime($order['created_at']));
                 ?>
                 <div class="amal-order-card" data-id="<?php echo esc_attr($order['id']); ?>">
                     <div class="amal-order-header">
@@ -878,7 +878,7 @@ class AmalProfileManagement
                         <span class="amal-order-status <?php echo esc_attr($status_class); ?>"><?php echo esc_html(ucfirst($order['status'])); ?></span>
                     </div>
                     <p class="amal-card-info"><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php echo esc_html($order_date); ?></p>
-                    <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> $<?php echo esc_html(number_format($order['total_price'], 2)); ?></p>
+                    <p class="amal-card-info"><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php echo esc_html(number_format($order['total_price'], 2)); ?> CHF</p>
                     <button class="amal-btn amal-btn-view-order" data-order-id="<?php echo esc_attr($order['id']); ?>"><?php esc_html_e('View Details', 'amal-profile-management'); ?></button>
                 </div>
                 <?php
@@ -926,14 +926,14 @@ class AmalProfileManagement
 
         ob_start();
         $status_class = 'amal-status-' . strtolower($order['status']);
-        $order_date = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
+        $order_date = date('d.m.Y H:i', strtotime($order['created_at']));
         ?>
         <div class="amal-order-details">
             <div class="amal-order-summary">
                 <h4><?php echo sprintf(esc_html__('Order #%d Details', 'amal-profile-management'), $order['id']); ?></h4>
                 <p><strong><?php esc_html_e('Date:', 'amal-profile-management'); ?></strong> <?php echo esc_html($order_date); ?></p>
                 <p><strong><?php esc_html_e('Status:', 'amal-profile-management'); ?></strong> <span class="amal-order-status <?php echo esc_attr($status_class); ?>"><?php echo esc_html(ucfirst($order['status'])); ?></span></p>
-                <p><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> $<?php echo esc_html(number_format($order['total_price'], 2)); ?></p>
+                <p><strong><?php esc_html_e('Total:', 'amal-profile-management'); ?></strong> <?php echo esc_html(number_format($order['total_price'], 2)); ?> CHF</p>
             </div>
             
             <div class="amal-order-items">
@@ -948,7 +948,7 @@ class AmalProfileManagement
                                 </div>
                                 <div class="amal-item-details">
                                     <p><strong><?php esc_html_e('Quantity:', 'amal-profile-management'); ?></strong> <?php echo esc_html($item['quantity']); ?></p>
-                                    <p><strong><?php esc_html_e('Price:', 'amal-profile-management'); ?></strong> $<?php echo esc_html(number_format($item['price'], 2)); ?></p>
+                                    <p><strong><?php esc_html_e('Price:', 'amal-profile-management'); ?></strong> <?php echo esc_html(number_format($item['price'], 2)); ?> CHF</p>
                                 </div>
                             </div>
                         <?php endforeach; ?>
