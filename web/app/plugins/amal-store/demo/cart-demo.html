@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amal Store Cart Demo</title>
+    <link rel="stylesheet" href="assets/css/frontend.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .demo-navigation {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .demo-navigation a {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            background: #0073aa;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .demo-cart-count {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>Amal Store Shopping Cart Demo</h1>
+        <p>Demonstration of the new shopping cart functionality</p>
+    </div>
+    
+    <div class="demo-navigation">
+        <a href="#storefront">Storefront</a>
+        <a href="#cart">Cart <span class="amal-cart-count demo-cart-count">0</span></a>
+    </div>
+
+    <!-- Cart Demo Section -->
+    <div class="amal-cart-container">
+        <div class="amal-cart-header">
+            <h2>Shopping Cart</h2>
+            <span class="amal-cart-count">3 items</span>
+        </div>
+
+        <div class="amal-cart-feedback" style="display: none;"></div>
+
+        <div class="amal-cart-items">
+            <!-- Sample Cart Item 1 -->
+            <div class="amal-cart-item" data-item-id="1">
+                <div class="amal-cart-item-info">
+                    <h4 class="amal-cart-item-title">Premium Dog Food</h4>
+                    <span class="amal-cart-item-price">$24.99 each</span>
+                </div>
+                
+                <div class="amal-cart-item-quantity">
+                    <label for="quantity-1">Quantity:</label>
+                    <div class="amal-quantity-controls">
+                        <button type="button" class="amal-qty-decrease" data-item-id="1">-</button>
+                        <input type="number" 
+                               id="quantity-1" 
+                               class="amal-cart-quantity-input" 
+                               value="2" 
+                               min="1" 
+                               max="10"
+                               data-item-id="1">
+                        <button type="button" class="amal-qty-increase" data-item-id="1">+</button>
+                    </div>
+                </div>
+                
+                <div class="amal-cart-item-total">
+                    <span class="amal-item-total">$49.98</span>
+                </div>
+                
+                <div class="amal-cart-item-actions">
+                    <button type="button" class="amal-remove-item" data-item-id="1">
+                        Remove
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sample Cart Item 2 -->
+            <div class="amal-cart-item" data-item-id="2">
+                <div class="amal-cart-item-info">
+                    <h4 class="amal-cart-item-title">Cat Scratching Post</h4>
+                    <span class="amal-cart-item-price">$39.99 each</span>
+                </div>
+                
+                <div class="amal-cart-item-quantity">
+                    <label for="quantity-2">Quantity:</label>
+                    <div class="amal-quantity-controls">
+                        <button type="button" class="amal-qty-decrease" data-item-id="2">-</button>
+                        <input type="number" 
+                               id="quantity-2" 
+                               class="amal-cart-quantity-input" 
+                               value="1" 
+                               min="1" 
+                               max="5"
+                               data-item-id="2">
+                        <button type="button" class="amal-qty-increase" data-item-id="2">+</button>
+                    </div>
+                </div>
+                
+                <div class="amal-cart-item-total">
+                    <span class="amal-item-total">$39.99</span>
+                </div>
+                
+                <div class="amal-cart-item-actions">
+                    <button type="button" class="amal-remove-item" data-item-id="2">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="amal-cart-summary">
+            <div class="amal-cart-subtotal">
+                <span class="label">Subtotal:</span>
+                <span class="amount">$89.97</span>
+            </div>
+            
+            <div class="amal-cart-total">
+                <span class="label">Total:</span>
+                <span class="amount">$89.97</span>
+            </div>
+        </div>
+
+        <div class="amal-cart-actions">
+            <a href="#" class="amal-continue-shopping">Continue Shopping</a>
+            <button type="button" class="amal-checkout-btn" disabled>
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; background: white; border-radius: 8px;">
+        <h3>Features Implemented:</h3>
+        <ul>
+            <li>✅ Add items to cart with quantity</li>
+            <li>✅ Remove items from cart</li>
+            <li>✅ Update item quantities (+ / - buttons and direct input)</li>
+            <li>✅ Real-time cart total updates</li>
+            <li>✅ Cart persistence across sessions (PHP sessions + cookie backup)</li>
+            <li>✅ Stock quantity validation</li>
+            <li>✅ Responsive cart design</li>
+            <li>✅ AJAX-powered cart operations</li>
+            <li>✅ Cart shortcode [amal_cart]</li>
+            <li>✅ Guest user cart support</li>
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Demo JavaScript simulation (without WordPress AJAX)
+        $(document).ready(function() {
+            console.log('Cart demo loaded');
+            
+            // Simulate cart interactions for demo
+            $('.amal-qty-increase').on('click', function() {
+                var $input = $(this).siblings('.amal-cart-quantity-input');
+                var current = parseInt($input.val());
+                var max = parseInt($input.attr('max'));
+                if (current < max) {
+                    $input.val(current + 1);
+                    updateDemoTotals();
+                }
+            });
+            
+            $('.amal-qty-decrease').on('click', function() {
+                var $input = $(this).siblings('.amal-cart-quantity-input');
+                var current = parseInt($input.val());
+                var min = parseInt($input.attr('min'));
+                if (current > min) {
+                    $input.val(current - 1);
+                    updateDemoTotals();
+                }
+            });
+            
+            $('.amal-cart-quantity-input').on('change', function() {
+                updateDemoTotals();
+            });
+            
+            $('.amal-remove-item').on('click', function() {
+                if (confirm('Remove this item from cart?')) {
+                    $(this).closest('.amal-cart-item').fadeOut(300, function() {
+                        $(this).remove();
+                        updateDemoTotals();
+                        checkEmptyCart();
+                    });
+                }
+            });
+            
+            function updateDemoTotals() {
+                var total = 0;
+                $('.amal-cart-item').each(function() {
+                    var $item = $(this);
+                    var price = parseFloat($item.find('.amal-cart-item-price').text().replace(/[^0-9.]/g, ''));
+                    var quantity = parseInt($item.find('.amal-cart-quantity-input').val());
+                    var itemTotal = price * quantity;
+                    $item.find('.amal-item-total').text('$' + itemTotal.toFixed(2));
+                    total += itemTotal;
+                });
+                
+                $('.amal-cart-subtotal .amount').text('$' + total.toFixed(2));
+                $('.amal-cart-total .amount').text('$' + total.toFixed(2));
+                
+                var itemCount = $('.amal-cart-item').length;
+                $('.amal-cart-count').text(itemCount + ' item' + (itemCount !== 1 ? 's' : ''));
+            }
+            
+            function checkEmptyCart() {
+                if ($('.amal-cart-item').length === 0) {
+                    $('.amal-cart-items, .amal-cart-summary, .amal-cart-actions').hide();
+                    $('.amal-cart-container').append(
+                        '<div class="amal-cart-empty">' +
+                        '<p>Your cart is empty.</p>' +
+                        '<a href="#" class="amal-continue-shopping">Continue Shopping</a>' +
+                        '</div>'
+                    );
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -24,6 +24,12 @@
             
             // Handle filter form auto-submit on category change
             $(document).on('change', '.amal-category-select', this.autoSubmitFilters);
+            
+            // Cart management events
+            $(document).on('click', '.amal-remove-item', this.handleRemoveItem);
+            $(document).on('click', '.amal-qty-increase', this.handleQuantityIncrease);
+            $(document).on('click', '.amal-qty-decrease', this.handleQuantityDecrease);
+            $(document).on('change', '.amal-cart-quantity-input', this.handleQuantityChange);
         },
 
         handleAddToCart: function(e) {
@@ -127,11 +133,193 @@
             }
         },
 
+        handleRemoveItem: function(e) {
+            e.preventDefault();
+            
+            var $button = $(this);
+            var itemId = $button.data('item-id');
+            
+            if (!confirm('Are you sure you want to remove this item from your cart?')) {
+                return;
+            }
+            
+            // Disable button and show loading state
+            $button.prop('disabled', true);
+            var originalText = $button.text();
+            $button.text('Removing...');
+            
+            // Make AJAX request
+            $.ajax({
+                url: amal_store_ajax.ajax_url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'amal_remove_from_cart',
+                    item_id: itemId,
+                    nonce: amal_store_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        AmalStore.showFeedback('success', response.data.message);
+                        AmalStore.updateCartCount(response.data.cart_count);
+                        AmalStore.updateCartDisplay(response.data);
+                        
+                        // Remove item from DOM
+                        $button.closest('.amal-cart-item').fadeOut(300, function() {
+                            $(this).remove();
+                            AmalStore.checkEmptyCart();
+                        });
+                    } else {
+                        AmalStore.showFeedback('error', response.data || 'Failed to remove item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    AmalStore.showFeedback('error', 'An error occurred. Please try again.');
+                },
+                complete: function() {
+                    // Re-enable button and restore text
+                    $button.prop('disabled', false);
+                    $button.text(originalText);
+                }
+            });
+        },
+
+        handleQuantityIncrease: function(e) {
+            e.preventDefault();
+            
+            var $button = $(this);
+            var itemId = $button.data('item-id');
+            var $quantityInput = $button.siblings('.amal-cart-quantity-input');
+            var currentQuantity = parseInt($quantityInput.val()) || 1;
+            var maxQuantity = parseInt($quantityInput.attr('max')) || 999;
+            
+            if (currentQuantity < maxQuantity) {
+                $quantityInput.val(currentQuantity + 1).trigger('change');
+            }
+        },
+
+        handleQuantityDecrease: function(e) {
+            e.preventDefault();
+            
+            var $button = $(this);
+            var itemId = $button.data('item-id');
+            var $quantityInput = $button.siblings('.amal-cart-quantity-input');
+            var currentQuantity = parseInt($quantityInput.val()) || 1;
+            var minQuantity = parseInt($quantityInput.attr('min')) || 1;
+            
+            if (currentQuantity > minQuantity) {
+                $quantityInput.val(currentQuantity - 1).trigger('change');
+            }
+        },
+
+        handleQuantityChange: function(e) {
+            var $input = $(this);
+            var itemId = $input.data('item-id');
+            var newQuantity = parseInt($input.val()) || 1;
+            var minQuantity = parseInt($input.attr('min')) || 1;
+            var maxQuantity = parseInt($input.attr('max')) || 999;
+            
+            // Validate quantity
+            if (newQuantity < minQuantity) {
+                newQuantity = minQuantity;
+                $input.val(newQuantity);
+            } else if (newQuantity > maxQuantity) {
+                newQuantity = maxQuantity;
+                $input.val(newQuantity);
+            }
+            
+            // Update cart via AJAX
+            AmalStore.updateCartItem(itemId, newQuantity);
+        },
+
+        updateCartItem: function(itemId, quantity) {
+            // Make AJAX request to update cart
+            $.ajax({
+                url: amal_store_ajax.ajax_url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'amal_update_cart',
+                    item_id: itemId,
+                    quantity: quantity,
+                    nonce: amal_store_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        AmalStore.updateCartCount(response.data.cart_count);
+                        AmalStore.updateCartDisplay(response.data);
+                        
+                        if (quantity === 0) {
+                            // Remove item from DOM if quantity is 0
+                            $('[data-item-id="' + itemId + '"]').closest('.amal-cart-item').fadeOut(300, function() {
+                                $(this).remove();
+                                AmalStore.checkEmptyCart();
+                            });
+                        }
+                    } else {
+                        AmalStore.showFeedback('error', response.data || 'Failed to update cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    AmalStore.showFeedback('error', 'An error occurred. Please try again.');
+                }
+            });
+        },
+
+        updateCartDisplay: function(data) {
+            // Update cart totals if elements exist
+            if (data.cart_total !== undefined) {
+                $('.amal-cart-subtotal .amount').text('$' + parseFloat(data.cart_total).toFixed(2));
+                $('.amal-cart-total .amount').text('$' + parseFloat(data.cart_total).toFixed(2));
+            }
+            
+            // Update individual item totals
+            $('.amal-cart-item').each(function() {
+                var $item = $(this);
+                var itemId = $item.data('item-id');
+                var $quantityInput = $item.find('.amal-cart-quantity-input');
+                var quantity = parseInt($quantityInput.val()) || 1;
+                var priceText = $item.find('.amal-cart-item-price').text();
+                var price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+                
+                if (!isNaN(price)) {
+                    var itemTotal = price * quantity;
+                    $item.find('.amal-item-total').text('$' + itemTotal.toFixed(2));
+                }
+            });
+        },
+
+        checkEmptyCart: function() {
+            // Check if cart is empty and show empty message
+            if ($('.amal-cart-item').length === 0) {
+                $('.amal-cart-items').hide();
+                $('.amal-cart-summary').hide();
+                $('.amal-cart-actions').hide();
+                
+                if ($('.amal-cart-empty').length === 0) {
+                    $('.amal-cart-container').append(
+                        '<div class="amal-cart-empty">' +
+                        '<p>Your cart is empty.</p>' +
+                        '<a href="#" class="amal-continue-shopping">Continue Shopping</a>' +
+                        '</div>'
+                    );
+                }
+            }
+        },
+
         updateCartCount: function(count) {
             // Update cart count in header/navigation if element exists
             var $cartCount = $('.amal-cart-count, .cart-count');
             if ($cartCount.length) {
                 $cartCount.text(count);
+            }
+            
+            // Update cart header count if on cart page
+            var $cartHeader = $('.amal-cart-header .amal-cart-count');
+            if ($cartHeader.length) {
+                $cartHeader.text(count + ' item' + (count != 1 ? 's' : ''));
             }
         }
     };

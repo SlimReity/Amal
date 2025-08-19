@@ -24,10 +24,17 @@ class Amal_Store_Frontend {
         // Register shortcodes
         add_shortcode('amal_storefront', array($this, 'render_storefront'));
         add_shortcode('amal_item_detail', array($this, 'render_item_detail'));
+        add_shortcode('amal_cart', array($this, 'render_cart'));
         
         // Handle AJAX requests
         add_action('wp_ajax_amal_add_to_cart', array($this, 'handle_add_to_cart'));
         add_action('wp_ajax_nopriv_amal_add_to_cart', array($this, 'handle_add_to_cart'));
+        add_action('wp_ajax_amal_update_cart', array($this, 'handle_update_cart'));
+        add_action('wp_ajax_nopriv_amal_update_cart', array($this, 'handle_update_cart'));
+        add_action('wp_ajax_amal_remove_from_cart', array($this, 'handle_remove_from_cart'));
+        add_action('wp_ajax_nopriv_amal_remove_from_cart', array($this, 'handle_remove_from_cart'));
+        add_action('wp_ajax_amal_get_cart', array($this, 'handle_get_cart'));
+        add_action('wp_ajax_nopriv_amal_get_cart', array($this, 'handle_get_cart'));
         
         // Enqueue scripts and styles
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -219,16 +226,20 @@ class Amal_Store_Frontend {
         
         // For now, we'll just store in session/cookie
         // In a full implementation, this would integrate with WooCommerce or custom cart
-        $cart = isset($_SESSION['amal_cart']) ? $_SESSION['amal_cart'] : array();
-        
-        if (!session_id()) {
-            session_start();
-        }
+        $cart = $this->get_cart();
         
         $cart_key = 'item_' . $item_id;
         
         if (isset($cart[$cart_key])) {
-            $cart[$cart_key]['quantity'] += $quantity;
+            $new_quantity = $cart[$cart_key]['quantity'] + $quantity;
+            
+            // Check if new quantity exceeds stock
+            if ($new_quantity > $item->stock_qty) {
+                wp_send_json_error('Not enough stock available for requested quantity');
+                return;
+            }
+            
+            $cart[$cart_key]['quantity'] = $new_quantity;
         } else {
             $cart[$cart_key] = array(
                 'item_id' => $item_id,
@@ -238,11 +249,174 @@ class Amal_Store_Frontend {
             );
         }
         
-        $_SESSION['amal_cart'] = $cart;
+        $this->save_cart($cart);
         
         wp_send_json_success(array(
             'message' => 'Item added to cart successfully',
             'cart_count' => array_sum(array_column($cart, 'quantity'))
         ));
+    }
+    
+    /**
+     * Get cart from session with cookie fallback
+     */
+    private function get_cart() {
+        if (!session_id()) {
+            session_start();
+        }
+        
+        $cart = isset($_SESSION['amal_cart']) ? $_SESSION['amal_cart'] : array();
+        
+        // If no session cart, try cookie
+        if (empty($cart) && isset($_COOKIE['amal_cart'])) {
+            $cart_data = json_decode(stripslashes($_COOKIE['amal_cart']), true);
+            if (is_array($cart_data)) {
+                $cart = $cart_data;
+                $_SESSION['amal_cart'] = $cart; // Restore to session
+            }
+        }
+        
+        return $cart;
+    }
+    
+    /**
+     * Save cart to session and cookie
+     */
+    private function save_cart($cart) {
+        if (!session_id()) {
+            session_start();
+        }
+        
+        $_SESSION['amal_cart'] = $cart;
+        
+        // Also save to cookie for persistence (30 days)
+        setcookie('amal_cart', json_encode($cart), time() + (30 * 24 * 60 * 60), '/');
+    }
+    
+    /**
+     * Handle update cart quantity AJAX request
+     */
+    public function handle_update_cart() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_store_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        $item_id = intval($_POST['item_id']);
+        $quantity = intval($_POST['quantity']);
+        
+        if ($quantity < 0) {
+            wp_send_json_error('Invalid quantity');
+            return;
+        }
+        
+        // Get item to check stock
+        $item = $this->get_item($item_id);
+        
+        if (!$item) {
+            wp_send_json_error('Item not found');
+            return;
+        }
+        
+        if ($quantity > $item->stock_qty) {
+            wp_send_json_error('Not enough stock available');
+            return;
+        }
+        
+        $cart = $this->get_cart();
+        $cart_key = 'item_' . $item_id;
+        
+        if ($quantity == 0) {
+            // Remove item from cart
+            unset($cart[$cart_key]);
+        } else {
+            // Update quantity
+            if (isset($cart[$cart_key])) {
+                $cart[$cart_key]['quantity'] = $quantity;
+            } else {
+                // Add new item
+                $cart[$cart_key] = array(
+                    'item_id' => $item_id,
+                    'quantity' => $quantity,
+                    'price' => $item->price,
+                    'title' => $item->title
+                );
+            }
+        }
+        
+        $this->save_cart($cart);
+        
+        wp_send_json_success(array(
+            'message' => $quantity == 0 ? 'Item removed from cart' : 'Cart updated successfully',
+            'cart_count' => array_sum(array_column($cart, 'quantity')),
+            'cart_total' => array_sum(array_map(function($item) {
+                return $item['price'] * $item['quantity'];
+            }, $cart))
+        ));
+    }
+    
+    /**
+     * Handle remove from cart AJAX request
+     */
+    public function handle_remove_from_cart() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_store_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        $item_id = intval($_POST['item_id']);
+        
+        $cart = $this->get_cart();
+        $cart_key = 'item_' . $item_id;
+        
+        if (isset($cart[$cart_key])) {
+            unset($cart[$cart_key]);
+            $this->save_cart($cart);
+            
+            wp_send_json_success(array(
+                'message' => 'Item removed from cart',
+                'cart_count' => array_sum(array_column($cart, 'quantity')),
+                'cart_total' => array_sum(array_map(function($item) {
+                    return $item['price'] * $item['quantity'];
+                }, $cart))
+            ));
+        } else {
+            wp_send_json_error('Item not found in cart');
+        }
+    }
+    
+    /**
+     * Handle get cart contents AJAX request
+     */
+    public function handle_get_cart() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'amal_store_nonce')) {
+            wp_die('Security check failed');
+        }
+        
+        $cart = $this->get_cart();
+        
+        wp_send_json_success(array(
+            'cart' => $cart,
+            'cart_count' => array_sum(array_column($cart, 'quantity')),
+            'cart_total' => array_sum(array_map(function($item) {
+                return $item['price'] * $item['quantity'];
+            }, $cart))
+        ));
+    }
+    
+    /**
+     * Render cart shortcode
+     */
+    public function render_cart($atts) {
+        $atts = shortcode_atts(array(
+            'show_checkout' => 'yes'
+        ), $atts);
+        
+        $cart = $this->get_cart();
+        
+        ob_start();
+        include AMAL_STORE_PLUGIN_DIR . 'templates/cart.php';
+        return ob_get_clean();
     }
 }
