@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amal Testing & Demo Index</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            padding: 10px 0;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .link-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .link-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        .link-card p {
+            margin: 0 0 10px 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .link-card a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .link-card a:hover {
+            text-decoration: underline;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-demo {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .status-guide {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        .status-test {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        .quick-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .quick-start h2 {
+            color: white;
+            border: none;
+            margin: 0 0 15px 0;
+            padding: 0;
+        }
+        .quick-start code {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .command-box {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Amal Platform - Testing & Demo Hub</h1>
+        
+        <div class="quick-start">
+            <h2>🚀 Quick Start</h2>
+            <p>New to testing Amal? Start here:</p>
+            <div class="command-box">
+                # 1. Install dependencies first<br>
+                composer install --timeout=600<br>
+                cd web/app/themes/Amal_Sage && composer install && npm install && npm run build
+            </div>
+            <p>Then choose a testing approach below ⬇️</p>
+        </div>
+
+        <div class="section">
+            <h2>📚 Testing Guides</h2>
+            <div class="link-grid">
+                <div class="link-card">
+                    <h3>Quick Site Access Guide <span class="status-badge status-guide">Essential</span></h3>
+                    <p>Fast reference for all sites and URLs in the platform</p>
+                    <a href="QUICK_SITE_ACCESS.md">View Quick Guide →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Complete Manual Testing Guide <span class="status-badge status-guide">Comprehensive</span></h3>
+                    <p>Detailed step-by-step testing instructions for all features</p>
+                    <a href="MANUAL_TESTING_GUIDE.md">View Full Guide →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Main Testing Framework <span class="status-badge status-test">Framework</span></h3>
+                    <p>Unit, integration, and E2E testing documentation</p>
+                    <a href="../TESTING.md">View TESTING.md →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🌐 Live Demo Pages</h2>
+            <p>These HTML demos can be opened directly in your browser to see the interfaces:</p>
+            <div class="link-grid">
+                <div class="link-card">
+                    <h3>Admin Inventory Management <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Visual demo of the store inventory admin interface</p>
+                    <a href="../web/app/plugins/amal-store/admin/test-inventory-admin.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Order Management System <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Admin interface for managing customer orders</p>
+                    <a href="../web/app/plugins/amal-store/demo/order-management-implementation.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Storefront Implementation <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Customer-facing store interface preview</p>
+                    <a href="../web/app/plugins/amal-store/demo/storefront-implementation.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Shopping Cart Demo <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Cart functionality and checkout process demo</p>
+                    <a href="../web/app/plugins/amal-store/demo/cart-demo.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Checkout Implementation <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Complete checkout process demonstration</p>
+                    <a href="../web/app/plugins/amal-store/demo/checkout-implementation.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Profile Management Demo <span class="status-badge status-demo">Demo</span></h3>
+                    <p>User profile, pets, and services management interface</p>
+                    <a href="../web/app/plugins/amal-auth/profile-management-demo.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Database Schema Preview <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Visual representation of the database structure</p>
+                    <a href="../web/app/plugins/amal-store/admin/test-schema.html">Open Demo →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Storefront Mockup <span class="status-badge status-demo">Demo</span></h3>
+                    <p>Design mockup for the store frontend</p>
+                    <a href="../web/app/plugins/amal-store/demo/storefront-mockup.html">Open Demo →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Real Application URLs</h2>
+            <p>When WordPress is running, these URLs provide access to the actual application:</p>
+            <div class="link-grid">
+                <div class="link-card">
+                    <h3>Main WordPress Site</h3>
+                    <p>Primary website frontend with Sage theme</p>
+                    <a href="/">Visit Site →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Social Blog Feed</h3>
+                    <p>Social media posts and community interactions</p>
+                    <a href="/blog/">Visit Blog →</a>
+                </div>
+                <div class="link-card">
+                    <h3>User Profiles</h3>
+                    <p>Individual user profile pages (replace {id} with user ID)</p>
+                    <a href="/blog/profile.php?user=1">Example Profile →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Admin Inventory</h3>
+                    <p>Store inventory management (admin access required)</p>
+                    <a href="/admin/inventory/">Admin Inventory →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Admin Orders</h3>
+                    <p>Order management system (admin access required)</p>
+                    <a href="/admin/orders/">Admin Orders →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Plugin Documentation</h2>
+            <p>Detailed documentation for each plugin component:</p>
+            <div class="link-grid">
+                <div class="link-card">
+                    <h3>Authentication System</h3>
+                    <p>User registration, login, and security features</p>
+                    <a href="../web/app/plugins/amal-auth/README.md">View Docs →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Store Plugin</h3>
+                    <p>E-commerce functionality and inventory management</p>
+                    <a href="../web/app/plugins/amal-store/README.md">View Docs →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Social Media Plugin</h3>
+                    <p>Social feed, posts, and user interactions</p>
+                    <a href="../web/app/plugins/amal-social/README.md">View Docs →</a>
+                </div>
+                <div class="link-card">
+                    <h3>Profile Management</h3>
+                    <p>User profiles, pets, and service management</p>
+                    <a href="../web/app/plugins/amal-profile-management/README.md">View Docs →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚡ Quick Testing Commands</h2>
+            <p>Commands you can run to test functionality (requires proper WordPress setup):</p>
+            <div class="command-box">
+                # Test social media functionality<br>
+                php web/app/plugins/amal-social/test-social.php<br><br>
+                
+                # Test store checkout<br>
+                php web/app/plugins/amal-store/test-checkout.php<br><br>
+                
+                # Test order management<br>
+                php web/app/plugins/amal-store/test-order-management.php<br><br>
+                
+                # Build theme assets<br>
+                cd web/app/themes/Amal_Sage && npm run build
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🆘 Need Help?</h2>
+            <p>If you're having trouble with testing or setup:</p>
+            <ul>
+                <li><strong>Start with the Quick Site Access Guide</strong> for a fast overview</li>
+                <li><strong>Check the demo HTML files</strong> to see what interfaces look like</li>
+                <li><strong>Read the plugin README files</strong> for specific functionality details</li>
+                <li><strong>View the main TESTING.md</strong> for framework documentation</li>
+                <li><strong>Ensure dependencies are installed</strong> using the commands above</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
