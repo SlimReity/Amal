@@ -80,9 +80,9 @@ $cart_subtotal = array_sum(array_map(function($item) {
         <?php if ($atts['show_checkout'] === 'yes'): ?>
             <div class="amal-cart-actions">
                 <a href="#" class="amal-continue-shopping">Continue Shopping</a>
-                <button type="button" class="amal-checkout-btn" disabled>
+                <a href="<?php echo esc_url(add_query_arg('page', 'checkout', get_permalink())); ?>" class="amal-checkout-btn">
                     Proceed to Checkout
-                </button>
+                </a>
             </div>
         <?php endif; ?>
     <?php endif; ?>
