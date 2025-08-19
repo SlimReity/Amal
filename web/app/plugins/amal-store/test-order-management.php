@@ -10,7 +10,10 @@
  */
 
 // Prevent direct access
-if (!defined('ABSPATH')) {
+if (php_sapi_name() === 'cli') {
+    // Allow CLI execution for testing
+    define('ABSPATH', dirname(__FILE__) . '/../../../../');
+} elseif (!defined('ABSPATH')) {
     exit;
 }
 
