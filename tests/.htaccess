@@ -1,0 +1,29 @@
+# .htaccess for Amal Testing Directory
+# This file helps resolve plugin demo links when using XAMPP virtual host
+# with DocumentRoot pointing to the tests directory
+
+RewriteEngine On
+
+# Enable following symlinks
+Options +FollowSymLinks
+
+# Handle requests for web directory (go up one level)
+RewriteCond %{REQUEST_URI} ^/web/(.*)$
+RewriteRule ^web/(.*)$ ../web/$1 [L]
+
+# Alternative rule for handling ../web/ requests
+RewriteCond %{THE_REQUEST} \s/+(.*/)?web/
+RewriteRule ^(.*/)?web/(.*) ../web/$2 [L]
+
+# Set proper MIME types for HTML files
+<IfModule mod_mime.c>
+    AddType text/html .html
+    AddType text/css .css
+    AddType application/javascript .js
+</IfModule>
+
+# Enable directory browsing for easier navigation during development
+Options +Indexes
+
+# Custom error pages
+ErrorDocument 404 /index.html
