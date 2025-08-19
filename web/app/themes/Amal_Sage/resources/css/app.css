@@ -1,3 +1,39 @@
 @import "tailwindcss" theme(static);
 @source "../views/";
 @source "../../app/";
+
+/* WordPress Menu Styling */
+.nav-primary .menu {
+  @apply flex space-x-6;
+}
+
+.nav-primary .menu li {
+  @apply list-none;
+}
+
+.nav-primary .menu a {
+  @apply px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-50;
+}
+
+.nav-primary .menu .current-menu-item a,
+.nav-primary .menu .current_page_item a {
+  @apply text-blue-600 font-medium;
+}
+
+/* Mobile WordPress Menu Styling */
+.nav-mobile .menu {
+  @apply flex flex-col space-y-2;
+}
+
+.nav-mobile .menu li {
+  @apply list-none;
+}
+
+.nav-mobile .menu a {
+  @apply block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors rounded-md hover:bg-gray-50;
+}
+
+.nav-mobile .menu .current-menu-item a,
+.nav-mobile .menu .current_page_item a {
+  @apply text-blue-600 font-medium;
+}
