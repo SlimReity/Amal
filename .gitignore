@@ -15,6 +15,7 @@ web/app/cache/*
 # Sage theme build and node modules
 web/app/themes/Amal_Sage/node_modules/
 web/app/themes/Amal_Sage/public/build/
+web/app/themes/Amal_Sage/vendor/
 
 # WordPress
 web/wp
