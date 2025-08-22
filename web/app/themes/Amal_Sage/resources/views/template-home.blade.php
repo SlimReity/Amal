@@ -15,12 +15,23 @@
         The comprehensive service platform connecting pet owners with trusted service providers for all your pet care needs.
       </p>
       <div class="flex flex-col md:flex-row gap-4 justify-center">
-        <a href="#services" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-          Explore Services
-        </a>
-        <a href="#how-it-works" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-          How It Works
-        </a>
+        @if(function_exists('amal_is_logged_in') && amal_is_logged_in())
+          {{-- Logged in user actions --}}
+          <a href="{{ home_url('/profile/') }}" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            My Profile
+          </a>
+          <a href="#services" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+            Explore Services
+          </a>
+        @else
+          {{-- Guest user actions --}}
+          <a href="{{ home_url('/auth/') }}" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            Get Started
+          </a>
+          <a href="#how-it-works" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+            How It Works
+          </a>
+        @endif
       </div>
     </div>
   </section>

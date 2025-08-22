@@ -39,12 +39,24 @@ class App extends Composer
                 'url' => home_url('/store/'),
                 'current' => is_page_template('template-store.blade.php'),
             ],
-            [
-                'title' => __('Profile', 'sage'),
+        ];
+
+        // Add authentication/profile links based on login status
+        if (function_exists('amal_is_logged_in') && amal_is_logged_in()) {
+            // User is logged in - show profile link
+            $items[] = [
+                'title' => __('My Profile', 'sage'),
                 'url' => home_url('/profile/'),
                 'current' => is_page_template('template-profile.blade.php'),
-            ],
-        ];
+            ];
+        } else {
+            // User is not logged in - show auth link
+            $items[] = [
+                'title' => __('Sign In', 'sage'),
+                'url' => home_url('/auth/'),
+                'current' => is_page_template('template-auth.blade.php'),
+            ];
+        }
 
         // Add blog/posts link if not using static front page
         if (get_option('show_on_front') !== 'page') {
