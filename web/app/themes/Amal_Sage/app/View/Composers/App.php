@@ -35,6 +35,11 @@ class App extends Composer
                 'current' => is_front_page(),
             ],
             [
+                'title' => __('Community', 'sage'),
+                'url' => home_url('/social/'),
+                'current' => is_page_template('template-social.blade.php'),
+            ],
+            [
                 'title' => __('Store', 'sage'),
                 'url' => home_url('/store/'),
                 'current' => is_page_template('template-store.blade.php'),
