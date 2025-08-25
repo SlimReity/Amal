@@ -105,10 +105,14 @@ class Amal_Store_Frontend {
         $items = $this->wpdb->get_results($sql);
         
         // Get total count for pagination
-        $count_sql = $this->wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->items_table} {$where}",
-            $params
-        );
+        if (!empty($params)) {
+            $count_sql = $this->wpdb->prepare(
+                "SELECT COUNT(*) FROM {$this->items_table} {$where}",
+                $params
+            );
+        } else {
+            $count_sql = "SELECT COUNT(*) FROM {$this->items_table} {$where}";
+        }
         
         $total_items = $this->wpdb->get_var($count_sql);
         
