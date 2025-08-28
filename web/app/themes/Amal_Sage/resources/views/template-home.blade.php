@@ -20,6 +20,9 @@
           <a href="{{ home_url('/profile/') }}" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
             My Profile
           </a>
+          <a href="{{ home_url('/social/') }}" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+            Community
+          </a>
           <a href="#services" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
             Explore Services
           </a>
@@ -27,6 +30,9 @@
           {{-- Guest user actions --}}
           <a href="{{ home_url('/auth/') }}" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
             Get Started
+          </a>
+          <a href="{{ home_url('/social/') }}" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+            Community
           </a>
           <a href="#how-it-works" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
             How It Works
