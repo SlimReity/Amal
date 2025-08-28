@@ -22,7 +22,7 @@ The sample items help you:
 
 Each item includes:
 - Realistic titles and descriptions
-- Appropriate pricing ($12.99 - $149.99)
+- Appropriate pricing (11.90 CHF - 135.00 CHF)
 - Stock quantities
 - Category classification
 - Placeholder images
@@ -68,12 +68,12 @@ http://your-site.com/wp-content/plugins/amal-store/populate-sample-items.php?act
 
 | Category | Items | Price Range | Total Stock |
 |----------|-------|-------------|-------------|
-| Food | 5 items | $12.99 - $45.99 | 375 units |
-| Accessories | 4 items | $19.99 - $89.99 | 153 units |
-| Housing | 5 items | $79.99 - $149.99 | 95 units |
-| Toys | 3 items | $15.99 - $32.99 | 175 units |
-| Aquarium | 4 items | $12.99 - $67.99 | 150 units |
-| Health | 2 items | $28.99 - $74.99 | 65 units |
+| Food | 5 items | 11.90 CHF - 42.00 CHF | 375 units |
+| Accessories | 4 items | 18.50 CHF - 79.90 CHF | 153 units |
+| Housing | 5 items | 72.00 CHF - 135.00 CHF | 95 units |
+| Toys | 3 items | 14.50 CHF - 29.90 CHF | 175 units |
+| Aquarium | 4 items | 11.90 CHF - 61.00 CHF | 150 units |
+| Health | 2 items | 26.50 CHF - 67.50 CHF | 65 units |
 
 **Total**: 23 items across 6 categories
 
@@ -88,7 +88,7 @@ http://your-site.com/wp-content/plugins/amal-store/populate-sample-items.php?act
 ### Item Variety
 - **Stock Levels**: Mix of high-stock (100+) and low-stock (15-20) items
 - **Out of Stock**: Includes one out-of-stock item for testing
-- **Price Range**: Covers budget ($12.99) to premium ($149.99) items
+- **Price Range**: Covers budget (11.90 CHF) to premium (135.00 CHF) items
 - **Categories**: Balanced across all major pet store categories
 
 ### Testing Scenarios
