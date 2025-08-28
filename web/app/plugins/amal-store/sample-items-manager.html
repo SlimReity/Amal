@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amal Store - Sample Items Manager</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-card h3 {
+            margin-top: 0;
+            color: #0073aa;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0073aa;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .button:hover {
+            background: #005a87;
+        }
+        .button.secondary {
+            background: #666;
+        }
+        .button.danger {
+            background: #dc3545;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border-left: 4px solid #0073aa;
+        }
+        .result.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .result.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .item-preview {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .item-preview h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        .item-category {
+            background: #0073aa;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .item-price {
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 16px;
+        }
+        .item-stock {
+            font-size: 12px;
+            color: #666;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0073aa;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏪 Amal Store Sample Items Manager</h1>
+        <p>Manage and populate your store with realistic sample items for testing and demonstration</p>
+    </div>
+
+    <div class="action-card">
+        <h3>📊 Current Store Status</h3>
+        <p>Check the current state of your store database:</p>
+        <button class="button" onclick="getSummary()">Get Store Summary</button>
+        <div id="summary-result"></div>
+    </div>
+
+    <div class="action-card">
+        <h3>🛍️ Populate Store with Sample Items</h3>
+        <p>Add 20+ realistic pet store items to your database. This includes products for dogs, cats, birds, fish, and small pets across multiple categories.</p>
+        
+        <button class="button" onclick="populateItems(false)">Add Sample Items (Keep Existing)</button>
+        <button class="button danger" onclick="populateItems(true)">Replace All Items</button>
+        
+        <div id="populate-result"></div>
+    </div>
+
+    <div class="action-card">
+        <h3>👀 Preview Sample Items</h3>
+        <p>Here's a preview of the items that will be added to your store:</p>
+        <button class="button secondary" onclick="showPreview()">Show Item Preview</button>
+        <div id="preview-result"></div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showResult(containerId, data, isError = false) {
+            const container = document.getElementById(containerId);
+            const resultClass = isError ? 'result error' : 'result success';
+            
+            if (typeof data === 'object') {
+                container.innerHTML = `<div class="${resultClass}"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+            } else {
+                container.innerHTML = `<div class="${resultClass}">${data}</div>`;
+            }
+        }
+
+        function getSummary() {
+            showLoading();
+            fetch('populate-sample-items.php?action=summary')
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    showResult('summary-result', data);
+                })
+                .catch(error => {
+                    hideLoading();
+                    showResult('summary-result', 'Error: ' + error.message, true);
+                });
+        }
+
+        function populateItems(clear = false) {
+            if (clear && !confirm('This will delete ALL existing items and replace them with sample items. Are you sure?')) {
+                return;
+            }
+            
+            showLoading();
+            fetch(`populate-sample-items.php?action=populate&clear=${clear}`)
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    showResult('populate-result', data);
+                    // Refresh summary if it's visible
+                    if (document.getElementById('summary-result').innerHTML) {
+                        getSummary();
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    showResult('populate-result', 'Error: ' + error.message, true);
+                });
+        }
+
+        function showPreview() {
+            const items = [
+                { title: 'Premium Dry Dog Food - Adult Formula', category: 'Food', price: '42.00 CHF', stock: '100 in stock' },
+                { title: 'Leather Dog Leash - 6ft', category: 'Accessories', price: '22.00 CHF', stock: '50 in stock' },
+                { title: 'Interactive Dog Toy Set', category: 'Toys', price: '29.90 CHF', stock: '75 in stock' },
+                { title: 'Orthopedic Dog Bed - Large', category: 'Housing', price: '79.90 CHF', stock: '20 in stock' },
+                { title: 'Automatic Cat Litter Box', category: 'Accessories', price: '79.90 CHF', stock: '25 in stock' },
+                { title: 'Premium Cat Food - Salmon & Rice', category: 'Food', price: '35.50 CHF', stock: '80 in stock' },
+                { title: 'Interactive Cat Toys Bundle', category: 'Toys', price: '18.50 CHF', stock: '60 in stock' },
+                { title: 'Multi-Level Cat Tree Tower', category: 'Housing', price: '115.00 CHF', stock: '15 in stock' },
+                { title: 'Large Bird Cage with Stand', category: 'Housing', price: '135.00 CHF', stock: '15 in stock' },
+                { title: 'Premium Bird Seed Mix', category: 'Food', price: '21.00 CHF', stock: '45 in stock' },
+                { title: 'Advanced Aquarium Filter System', category: 'Aquarium', price: '61.00 CHF', stock: '30 in stock' },
+                { title: 'LED Aquarium Light Strip', category: 'Aquarium', price: '49.50 CHF', stock: '35 in stock' },
+                { title: 'Hamster Cage Starter Kit', category: 'Housing', price: '72.00 CHF', stock: '20 in stock' },
+                { title: 'Pet Grooming Kit Professional', category: 'Health', price: '67.50 CHF', stock: '25 in stock' },
+                { title: 'Limited Edition Pet Carrier', category: 'Accessories', price: '79.90 CHF', stock: 'Out of Stock' }
+            ];
+
+            let previewHTML = '<div class="item-grid">';
+            items.forEach(item => {
+                previewHTML += `
+                    <div class="item-preview">
+                        <div class="item-category">${item.category}</div>
+                        <h4>${item.title}</h4>
+                        <div class="item-price">${item.price}</div>
+                        <div class="item-stock">${item.stock}</div>
+                    </div>
+                `;
+            });
+            previewHTML += '</div>';
+            previewHTML += '<p style="text-align: center; margin-top: 20px; color: #666;"><em>...and 6 more items covering all pet categories</em></p>';
+
+            document.getElementById('preview-result').innerHTML = previewHTML;
+        }
+
+        // Auto-load summary on page load
+        window.addEventListener('load', getSummary);
+    </script>
+</body>
+</html>
