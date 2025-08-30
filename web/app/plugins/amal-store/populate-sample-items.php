@@ -8,6 +8,9 @@
  * Usage: Run this script from WordPress admin or via CLI
  */
 
+
+if ( ! defined( 'WP_CLI' ) ) return;
+
 // Prevent direct access
 if (!defined('ABSPATH')) {
     // If not in WordPress context, load WordPress
@@ -17,22 +20,33 @@ if (!defined('ABSPATH')) {
     } else {
         die('WordPress not found. Please run this script from WordPress admin or ensure wp-load.php is accessible.');
     }
+    
+    // Register WP_CLI command outside the class
+    if (defined('WP_CLI') && WP_CLI) {
+        WP_CLI::add_command('amal-store populate-products', function($args, $assoc_args) {
+            $populator = new Amal_Store_Sample_Items();
+            $result = $populator->populate_items(isset($assoc_args['clear']) && $assoc_args['clear']);
+            if ($result['success']) {
+                WP_CLI::success($result['message'] . " Added: {$result['items_added']}, Skipped: {$result['items_skipped']}.");
+                if (!empty($result['errors'])) {
+                    WP_CLI::warning("Some items failed to insert:\n" . implode("\n", $result['errors']));
+                }
+            } else {
+                WP_CLI::error($result['message']);
+            }
+        });
+    }
 }
-
 class Amal_Store_Sample_Items {
-    
-    private $wpdb;
-    private $items_table;
-    
+    protected $wpdb;
+    protected $items_table;
+
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->items_table = $wpdb->prefix . 'amal_items';
+        $this->items_table = $wpdb->prefix . 'amal_store_items';
     }
-    
-    /**
-     * Get comprehensive sample items data
-     */
+
     public function get_sample_items() {
         return array(
             // Dog Products
@@ -72,7 +86,6 @@ class Amal_Store_Sample_Items {
                 'image_url' => 'https://via.placeholder.com/400x300/9b59b6/ffffff?text=Dog+Bed',
                 'is_active' => 1
             ),
-            
             // Cat Products
             array(
                 'title' => 'Automatic Cat Litter Box',
@@ -110,7 +123,6 @@ class Amal_Store_Sample_Items {
                 'image_url' => 'https://via.placeholder.com/400x300/95a5a6/ffffff?text=Cat+Tree',
                 'is_active' => 1
             ),
-            
             // Bird Products
             array(
                 'title' => 'Large Bird Cage with Stand',
@@ -139,7 +151,6 @@ class Amal_Store_Sample_Items {
                 'image_url' => 'https://via.placeholder.com/400x300/e67e22/ffffff?text=Bird+Toys',
                 'is_active' => 1
             ),
-            
             // Fish/Aquarium Products
             array(
                 'title' => 'Advanced Aquarium Filter System',
@@ -177,7 +188,6 @@ class Amal_Store_Sample_Items {
                 'image_url' => 'https://via.placeholder.com/400x300/8e44ad/ffffff?text=Aquarium+Decor',
                 'is_active' => 1
             ),
-            
             // Small Pet Products
             array(
                 'title' => 'Hamster Cage Starter Kit',
@@ -206,7 +216,6 @@ class Amal_Store_Sample_Items {
                 'image_url' => 'https://via.placeholder.com/400x300/16a085/ffffff?text=Pet+Playpen',
                 'is_active' => 1
             ),
-            
             // Health & Grooming
             array(
                 'title' => 'Pet Grooming Kit Professional',
@@ -226,7 +235,6 @@ class Amal_Store_Sample_Items {
                 'image_url' => 'https://via.placeholder.com/400x300/7f8c8d/ffffff?text=Pet+Vitamins',
                 'is_active' => 1
             ),
-            
             // Out of Stock Item (for testing)
             array(
                 'title' => 'Limited Edition Pet Carrier',
@@ -239,25 +247,16 @@ class Amal_Store_Sample_Items {
             )
         );
     }
-    
-    /**
-     * Check if table exists
-     */
+
     public function table_exists() {
         return $this->wpdb->get_var("SHOW TABLES LIKE '{$this->items_table}'") == $this->items_table;
     }
-    
-    /**
-     * Clear existing sample items (optional)
-     */
+
     public function clear_existing_items() {
         $result = $this->wpdb->query("DELETE FROM {$this->items_table}");
         return $result !== false;
     }
-    
-    /**
-     * Insert sample items into database
-     */
+
     public function populate_items($clear_existing = false) {
         if (!$this->table_exists()) {
             return array(
@@ -266,29 +265,27 @@ class Amal_Store_Sample_Items {
                 'items_added' => 0
             );
         }
-        
+
         if ($clear_existing) {
             $this->clear_existing_items();
         }
-        
+
         $items = $this->get_sample_items();
         $items_added = 0;
         $items_skipped = 0;
         $errors = array();
-        
+
         foreach ($items as $item) {
-            // Check if item already exists
             $existing = $this->wpdb->get_var($this->wpdb->prepare(
                 "SELECT id FROM {$this->items_table} WHERE title = %s",
                 $item['title']
             ));
-            
+
             if ($existing && !$clear_existing) {
                 $items_skipped++;
                 continue;
             }
-            
-            // Insert item
+
             $result = $this->wpdb->insert(
                 $this->items_table,
                 array(
@@ -302,14 +299,14 @@ class Amal_Store_Sample_Items {
                 ),
                 array('%s', '%s', '%s', '%f', '%d', '%s', '%d')
             );
-            
+
             if ($result !== false) {
                 $items_added++;
             } else {
                 $errors[] = "Failed to insert: " . $item['title'];
             }
         }
-        
+
         return array(
             'success' => true,
             'message' => "Successfully populated store with sample items.",
@@ -319,19 +316,16 @@ class Amal_Store_Sample_Items {
             'errors' => $errors
         );
     }
-    
-    /**
-     * Get summary of current items in database
-     */
+
     public function get_items_summary() {
         if (!$this->table_exists()) {
             return array('error' => 'Items table does not exist');
         }
-        
+
         $total = $this->wpdb->get_var("SELECT COUNT(*) FROM {$this->items_table}");
         $active = $this->wpdb->get_var("SELECT COUNT(*) FROM {$this->items_table} WHERE is_active = 1");
         $categories = $this->wpdb->get_results("SELECT category, COUNT(*) as count FROM {$this->items_table} GROUP BY category");
-        
+
         return array(
             'total_items' => intval($total),
             'active_items' => intval($active),
