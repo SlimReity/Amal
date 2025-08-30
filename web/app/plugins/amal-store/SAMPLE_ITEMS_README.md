@@ -30,13 +30,34 @@ Each item includes:
 
 ## 🚀 Quick Start
 
-### Option 1: Using the HTML Manager (Recommended)
+### Option 1: Using WP_CLI (Recommended)
+```bash
+# Get current store summary
+wp amal-store summary
+
+# Populate store with sample items (keeps existing items)
+wp amal-store populate
+
+# Replace all existing items with sample items
+wp amal-store populate --clear
+
+# List available sample items (without adding to database)
+wp amal-store list-samples
+
+# Clear all items from store
+wp amal-store clear
+
+# Clear all items from store without confirmation
+wp amal-store clear --yes
+```
+
+### Option 2: Using the HTML Manager
 1. Open `sample-items-manager.html` in your web browser
 2. Click "Get Store Summary" to check current status
 3. Click "Add Sample Items" to populate the database
 4. View the storefront to see the new items
 
-### Option 2: Direct PHP Script
+### Option 3: Direct PHP Script
 ```php
 // Include the script in your WordPress environment
 require_once 'populate-sample-items.php';
@@ -52,7 +73,7 @@ $result = $populator->populate_items(true);
 print_r($result);
 ```
 
-### Option 3: URL Parameters
+### Option 4: URL Parameters
 ```
 # Add sample items
 http://your-site.com/wp-content/plugins/amal-store/populate-sample-items.php?action=populate
@@ -63,6 +84,15 @@ http://your-site.com/wp-content/plugins/amal-store/populate-sample-items.php?act
 # Replace all items
 http://your-site.com/wp-content/plugins/amal-store/populate-sample-items.php?action=populate&clear=true
 ```
+
+## 📊 Available WP_CLI Commands
+
+| Command | Description | Options |
+|---------|-------------|---------|
+| `wp amal-store populate` | Populate store with sample items | `--clear` - Replace existing items |
+| `wp amal-store summary` | Show current store statistics | None |
+| `wp amal-store clear` | Remove all items from store | `--yes` - Skip confirmation |
+| `wp amal-store list-samples` | Preview available sample items | None |
 
 ## 📊 Sample Data Overview
 
