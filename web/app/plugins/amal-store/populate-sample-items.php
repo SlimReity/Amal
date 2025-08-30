@@ -5,36 +5,20 @@
  * This script populates the store with comprehensive sample items
  * for testing and demonstration purposes.
  * 
- * Usage: Run this script from WordPress admin or via CLI
+ * Usage: 
+ * - Via WP_CLI: wp amal-store populate [--clear]
+ * - Via WordPress admin or direct inclusion
+ * - Via URL parameters (for testing)
  */
-
-
-if ( ! defined( 'WP_CLI' ) ) return;
 
 // Prevent direct access
 if (!defined('ABSPATH')) {
-    // If not in WordPress context, load WordPress
+    // If not in WordPress context, try to load WordPress
     $wp_load_path = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/wp/wp-load.php';
     if (file_exists($wp_load_path)) {
         require_once $wp_load_path;
     } else {
         die('WordPress not found. Please run this script from WordPress admin or ensure wp-load.php is accessible.');
-    }
-    
-    // Register WP_CLI command outside the class
-    if (defined('WP_CLI') && WP_CLI) {
-        WP_CLI::add_command('amal-store populate-products', function($args, $assoc_args) {
-            $populator = new Amal_Store_Sample_Items();
-            $result = $populator->populate_items(isset($assoc_args['clear']) && $assoc_args['clear']);
-            if ($result['success']) {
-                WP_CLI::success($result['message'] . " Added: {$result['items_added']}, Skipped: {$result['items_skipped']}.");
-                if (!empty($result['errors'])) {
-                    WP_CLI::warning("Some items failed to insert:\n" . implode("\n", $result['errors']));
-                }
-            } else {
-                WP_CLI::error($result['message']);
-            }
-        });
     }
 }
 class Amal_Store_Sample_Items {

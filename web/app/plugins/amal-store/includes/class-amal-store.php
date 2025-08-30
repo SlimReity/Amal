@@ -20,6 +20,11 @@ class Amal_Store {
         require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-database.php';
         require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-frontend.php';
         require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-admin.php';
+        
+        // Load WP_CLI commands if WP_CLI is available
+        if (defined('WP_CLI') && WP_CLI) {
+            require_once AMAL_STORE_PLUGIN_DIR . 'includes/class-amal-store-cli.php';
+        }
     }
     
     private function init_hooks() {
@@ -35,5 +40,10 @@ class Amal_Store {
         
         // Initialize admin functionality
         $this->admin = new Amal_Store_Admin();
+        
+        // Register WP_CLI commands if WP_CLI is available
+        if (defined('WP_CLI') && WP_CLI) {
+            WP_CLI::add_command('amal-store', 'Amal_Store_CLI');
+        }
     }
 }
