@@ -85,6 +85,8 @@
     margin-bottom: 30px;
     /* Ensure cards have equal heights in each row */
     align-items: stretch;
+    /* Center grid items when they don't fill the full width */
+    justify-content: center;
     /* Ensure proper grid behavior over theme styles */
     list-style: none;
     padding: 0;
