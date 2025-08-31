@@ -192,7 +192,7 @@
         Join thousands of pet owners who trust Amal for their pet care needs. Your furry friends deserve the best!
       </p>
       <div class="flex flex-col md:flex-row gap-4 justify-center">
-        <a href="#register" class="btn-primary text-blue-600">
+        <a href="#register" class="btn-primary">
           Find Pet Care
         </a>
         <a href="#provider" class="btn-secondary">

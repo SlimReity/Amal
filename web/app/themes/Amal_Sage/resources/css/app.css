@@ -141,7 +141,7 @@
 }
 
 .btn-primary {
-  @apply px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105;
+  @apply px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 text-blue-600;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
