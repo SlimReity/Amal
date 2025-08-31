@@ -108,9 +108,6 @@
     </div>
     
     <div class="grid lg:grid-cols-3 gap-16 relative">
-      <!-- Connection lines for desktop -->
-      <div class="hidden lg:block absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400 transform -translate-y-1/2"></div>
-      <div class="hidden lg:block absolute top-1/2 right-1/3 w-1/3 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transform -translate-y-1/2"></div>
       
       <div class="text-center relative">
         <div class="step-indicator">
