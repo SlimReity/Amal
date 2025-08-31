@@ -4,7 +4,10 @@
     "src": "editor.deps.json"
   },
   "resources/css/app.css": {
+
     "file": "assets/app-CqgBu8P2.css",
+    "file": "assets/app-D-Rq7-FO.css",
+
     "src": "resources/css/app.css",
     "isEntry": true
   },

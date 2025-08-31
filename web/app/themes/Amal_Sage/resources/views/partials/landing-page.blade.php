@@ -108,9 +108,6 @@
     </div>
     
     <div class="grid lg:grid-cols-3 gap-16 relative">
-      <!-- Connection lines for desktop -->
-      <div class="hidden lg:block absolute top-1/2 left-1/3 w-1/3 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400 transform -translate-y-1/2"></div>
-      <div class="hidden lg:block absolute top-1/2 right-1/3 w-1/3 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transform -translate-y-1/2"></div>
       
       <div class="text-center relative">
         <div class="step-indicator">
@@ -172,7 +169,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Secure Platform</h3>
         </div>
-        <p class="text-gray-300 text-lg leading-relaxed">Safe and secure booking with verified service providers and protected payments for complete peace of mind.</p>
+        <p class="text-gray-600 text-lg leading-relaxed">Safe and secure booking with verified service providers and protected payments for complete peace of mind.</p>
       </div>
       
       <div class="feature-card bg-gray-800/50 backdrop-blur-sm border-gray-700">
@@ -184,7 +181,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Easy Communication</h3>
         </div>
-        <p class="text-gray-300 text-lg leading-relaxed">Built-in messaging system to coordinate details and stay connected with your pet's caregiver in real-time.</p>
+        <p class="text-gray-600 text-lg leading-relaxed">Built-in messaging system to coordinate details and stay connected with your pet's caregiver in real-time.</p>
       </div>
       
       <div class="feature-card bg-gray-800/50 backdrop-blur-sm border-gray-700">
@@ -196,7 +193,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Trusted Reviews</h3>
         </div>
-        <p class="text-gray-300 text-lg leading-relaxed">Read authentic reviews and ratings from other pet owners to make informed decisions about your pet's care.</p>
+        <p class="text-gray-600 text-lg leading-relaxed">Read authentic reviews and ratings from other pet owners to make informed decisions about your pet's care.</p>
       </div>
       
       <div class="feature-card bg-gray-800/50 backdrop-blur-sm border-gray-700">
@@ -208,7 +205,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Mobile Friendly</h3>
         </div>
-        <p class="text-gray-300 text-lg leading-relaxed">Access all features on any device with our responsive design and mobile optimization for on-the-go management.</p>
+        <p class="text-gray-600 text-lg leading-relaxed">Access all features on any device with our responsive design and mobile optimization for on-the-go management.</p>
       </div>
       
       <div class="feature-card bg-gray-800/50 backdrop-blur-sm border-gray-700">
@@ -220,7 +217,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Flexible Booking</h3>
         </div>
-        <p class="text-gray-300 text-lg leading-relaxed">Schedule one-time services or set up recurring appointments that fit your lifestyle and your pet's needs.</p>
+        <p class="text-gray-600 text-lg leading-relaxed">Schedule one-time services or set up recurring appointments that fit your lifestyle and your pet's needs.</p>
       </div>
       
       <div class="feature-card bg-gray-800/50 backdrop-blur-sm border-gray-700">
@@ -232,7 +229,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Quality Assurance</h3>
         </div>
-        <p class="text-gray-300 text-lg leading-relaxed">All service providers are vetted and background-checked for your peace of mind and your pet's safety.</p>
+        <p class="text-gray-600 text-lg leading-relaxed">All service providers are vetted and background-checked for your peace of mind and your pet's safety.</p>
       </div>
     </div>
   </div>
