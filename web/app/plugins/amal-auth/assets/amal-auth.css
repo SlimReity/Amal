@@ -73,6 +73,7 @@
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     box-sizing: border-box;
     background-color: #fff;
+    color: #333;
 }
 
 /* Enhanced inputs for template pages */
@@ -85,6 +86,7 @@
     border-radius: 8px;
     background: #f9fafb;
     transition: all 0.2s ease;
+    color: #374151;
 }
 
 .form-group input:focus,
