@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amal Store - Alignment Test</title>
+    <link rel="stylesheet" href="/home/runner/work/Amal/Amal/web/app/plugins/amal-store/assets/css/frontend.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Store Alignment Test</h1>
+        
+        <!-- Storefront Layout -->
+        <div class="amal-storefront">
+            <!-- Filter Section -->
+            <div class="amal-store-filters">
+                <form method="get" class="amal-filter-form">
+                    <div class="amal-search-box">
+                        <input type="text" name="search" placeholder="Search products..." class="amal-search-input">
+                    </div>
+                    <div class="amal-category-filter">
+                        <select name="category" class="amal-category-select">
+                            <option value="">All Categories</option>
+                            <option value="Food">Food</option>
+                            <option value="Toys">Toys</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="amal-filter-button">Filter</button>
+                </form>
+            </div>
+
+            <!-- Items Grid -->
+            <div class="amal-items-grid">
+                <!-- Item 1 - Short content -->
+                <div class="amal-item-card">
+                    <div class="amal-item-image">
+                        <img src="https://via.placeholder.com/280x200?text=Dog+Food" alt="Premium Dog Food">
+                    </div>
+                    <div class="amal-item-content">
+                        <h3 class="amal-item-title">
+                            <a href="#">Premium Dry Dog Food - Adult Formula</a>
+                        </h3>
+                        <div class="amal-item-category">Food</div>
+                        <div class="amal-item-price">$42.00</div>
+                        <div class="amal-item-excerpt">High-quality dry dog food.</div>
+                        <div class="amal-item-stock">
+                            <span class="in-stock">100 in stock</span>
+                        </div>
+                        <div class="amal-item-actions">
+                            <a href="#" class="amal-view-details">View Details</a>
+                            <button type="button" class="amal-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 - Long content -->
+                <div class="amal-item-card">
+                    <div class="amal-item-image">
+                        <img src="https://via.placeholder.com/280x200?text=Dog+Leash" alt="Leather Dog Leash">
+                    </div>
+                    <div class="amal-item-content">
+                        <h3 class="amal-item-title">
+                            <a href="#">Leather Dog Leash - 6ft Premium Quality with Comfortable Handle</a>
+                        </h3>
+                        <div class="amal-item-category">Accessories</div>
+                        <div class="amal-item-price">$22.00</div>
+                        <div class="amal-item-excerpt">Durable genuine leather dog leash. 6 feet long. Features comfortable padded handle and strong metal clips for maximum security and comfort during walks.</div>
+                        <div class="amal-item-stock">
+                            <span class="in-stock">50 in stock</span>
+                        </div>
+                        <div class="amal-item-actions">
+                            <a href="#" class="amal-view-details">View Details</a>
+                            <button type="button" class="amal-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 - Medium content -->
+                <div class="amal-item-card">
+                    <div class="amal-item-image">
+                        <img src="https://via.placeholder.com/280x200?text=Dog+Toys" alt="Interactive Dog Toy Set">
+                    </div>
+                    <div class="amal-item-content">
+                        <h3 class="amal-item-title">
+                            <a href="#">Interactive Dog Toy Set</a>
+                        </h3>
+                        <div class="amal-item-category">Toys</div>
+                        <div class="amal-item-price">$29.90</div>
+                        <div class="amal-item-excerpt">Set of 5 interactive dog toys including rope toy, squeaky ball, puzzle feeder, and chew toy.</div>
+                        <div class="amal-item-stock">
+                            <span class="in-stock">75 in stock</span>
+                        </div>
+                        <div class="amal-item-actions">
+                            <a href="#" class="amal-view-details">View Details</a>
+                            <button type="button" class="amal-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 - No image -->
+                <div class="amal-item-card">
+                    <div class="amal-item-content">
+                        <h3 class="amal-item-title">
+                            <a href="#">Orthopedic Dog Bed - Large</a>
+                        </h3>
+                        <div class="amal-item-category">Accessories</div>
+                        <div class="amal-item-price">$89.99</div>
+                        <div class="amal-item-excerpt">Memory foam orthopedic bed for large dogs.</div>
+                        <div class="amal-item-stock">
+                            <span class="in-stock">25 in stock</span>
+                        </div>
+                        <div class="amal-item-actions">
+                            <a href="#" class="amal-view-details">View Details</a>
+                            <button type="button" class="amal-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 - Out of stock -->
+                <div class="amal-item-card">
+                    <div class="amal-item-image">
+                        <img src="https://via.placeholder.com/280x200?text=Cat+Litter" alt="Automatic Cat Litter Box">
+                    </div>
+                    <div class="amal-item-content">
+                        <h3 class="amal-item-title">
+                            <a href="#">Automatic Cat Litter Box with Smart Sensors</a>
+                        </h3>
+                        <div class="amal-item-category">Accessories</div>
+                        <div class="amal-item-price">$199.99</div>
+                        <div class="amal-item-excerpt">Revolutionary self-cleaning litter box with advanced sensor technology and waste management system.</div>
+                        <div class="amal-item-stock">
+                            <span class="out-of-stock">Out of stock</span>
+                        </div>
+                        <div class="amal-item-actions">
+                            <a href="#" class="amal-view-details">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 - Short title -->
+                <div class="amal-item-card">
+                    <div class="amal-item-image">
+                        <img src="https://via.placeholder.com/280x200?text=Cat+Food" alt="Premium Cat Food">
+                    </div>
+                    <div class="amal-item-content">
+                        <h3 class="amal-item-title">
+                            <a href="#">Premium Cat Food - Salmon & Rice</a>
+                        </h3>
+                        <div class="amal-item-category">Food</div>
+                        <div class="amal-item-price">$35.50</div>
+                        <div class="amal-item-excerpt">Premium cat food with salmon.</div>
+                        <div class="amal-item-stock">
+                            <span class="in-stock">60 in stock</span>
+                        </div>
+                        <div class="amal-item-actions">
+                            <a href="#" class="amal-view-details">View Details</a>
+                            <button type="button" class="amal-add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
