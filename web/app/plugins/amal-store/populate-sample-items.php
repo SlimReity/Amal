@@ -28,7 +28,7 @@ class Amal_Store_Sample_Items {
     public function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->items_table = $wpdb->prefix . 'amal_store_items';
+        $this->items_table = $wpdb->prefix . 'amal_items';
     }
 
     public function get_sample_items() {
