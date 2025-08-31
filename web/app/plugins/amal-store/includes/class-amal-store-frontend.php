@@ -40,8 +40,8 @@ class Amal_Store_Frontend {
         add_action('wp_ajax_amal_process_checkout', array($this, 'handle_checkout'));
         add_action('wp_ajax_nopriv_amal_process_checkout', array($this, 'handle_checkout'));
         
-        // Enqueue scripts and styles
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+        // Enqueue scripts and styles with higher priority to override theme styles
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 20);
     }
     
     /**
