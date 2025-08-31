@@ -11,7 +11,7 @@
       The comprehensive service platform connecting pet owners with trusted service providers for all your pet care needs.
     </p>
     <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-      <a href="#services" class="btn-primary text-purple-600 hover:text-purple-800">
+      <a href="#services" class="btn-primary text-gray-900 hover:text-gray-700">
         <span class="flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -249,7 +249,7 @@
       Join thousands of pet owners who trust Amal for their pet care needs. Your furry friends deserve the best!
     </p>
     <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-      <a href="#register" class="btn-primary text-purple-600 hover:text-purple-800 group">
+      <a href="#register" class="btn-primary text-gray-900 hover:text-gray-700 group">
         <span class="flex items-center gap-2">
           <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
