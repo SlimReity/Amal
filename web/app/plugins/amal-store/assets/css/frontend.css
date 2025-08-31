@@ -80,7 +80,7 @@
 /* Items Grid */
 .amal-storefront .amal-items-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
     gap: 20px;
     margin-bottom: 30px;
     /* Ensure cards have equal heights in each row */
@@ -484,7 +484,7 @@
     }
     
     .amal-items-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 15px;
         justify-content: center;
     }
