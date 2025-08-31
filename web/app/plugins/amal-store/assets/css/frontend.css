@@ -9,6 +9,8 @@
     padding: 20px;
     /* Ensure proper centering */
     box-sizing: border-box;
+    display: block;
+    width: 100%;
 }
 
 /* Filters Section */
