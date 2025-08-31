@@ -1,3 +1,3 @@
 <footer class="content-info">
-  @php(dynamic_sidebar('sidebar-footer'))
+  {{-- Footer widgets removed to eliminate unwanted default WordPress content --}}
 </footer>
