@@ -68,7 +68,7 @@ class App extends Composer
             $items[] = [
                 'title' => __('Blog', 'sage'),
                 'url' => home_url('/blog/'),
-                'current' => is_home() || is_single() || is_category() || is_tag() || is_author(),
+                'current' => (is_home() && !is_front_page()) || is_single() || is_category() || is_tag() || is_author(),
             ];
         }
 
