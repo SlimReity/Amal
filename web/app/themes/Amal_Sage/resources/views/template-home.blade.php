@@ -192,10 +192,10 @@
         Join thousands of pet owners who trust Amal for their pet care needs. Your furry friends deserve the best!
       </p>
       <div class="flex flex-col md:flex-row gap-4 justify-center">
-        <a href="#register" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+        <a href="#register" class="btn-primary text-blue-600">
           Find Pet Care
         </a>
-        <a href="#provider" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+        <a href="#provider" class="btn-secondary">
           Become a Provider
         </a>
       </div>

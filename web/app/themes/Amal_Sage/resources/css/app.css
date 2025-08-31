@@ -148,12 +148,12 @@
 
 .btn-secondary {
   @apply border-2 border-white text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .floating-shapes {
